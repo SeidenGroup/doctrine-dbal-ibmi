@@ -1,0 +1,15 @@
+{
+    "name": "alanseiden/doctrine-dbal-ibmi",
+    "description": "Doctrine DBAL module for DB2 on the IBM i platform",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "James Titcumb",
+            "email": "james@asgrim.com"
+        }
+    ],
+    "require": {
+        "doctrine/dbal": "^2.5"
+    }
+}
