@@ -11,5 +11,10 @@
     ],
     "require": {
         "doctrine/dbal": "^2.5"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DoctrineDbalIbmi\\": "src/"
+        }
     }
 }
