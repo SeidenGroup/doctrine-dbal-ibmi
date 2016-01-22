@@ -19,7 +19,9 @@
 
 namespace DoctrineDbalIbmi\Schema;
 
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\DB2SchemaManager;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * IBMi Db2 Schema Manager.
@@ -186,7 +188,7 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
             $options['precision'] = $precision;
         }
 
-        return new Column($tableColumn['colname'], \Doctrine\DBAL\Types\Type::getType($type), $options);
+        return new Column($tableColumn['colname'], Type::getType($type), $options);
     }
 
     /**
