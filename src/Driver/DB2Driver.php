@@ -19,7 +19,7 @@
 
 namespace DoctrineDbalIbmi\Driver;
 
-use DoctrineDbalIbmi\Driver\DB2IBMiConnection;
+use Doctrine\DBAL\Driver\IBMDB2\DB2Connection;
 
 /**
  * IBM DB2 Driver.
