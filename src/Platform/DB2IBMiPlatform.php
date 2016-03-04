@@ -304,4 +304,12 @@ class DB2IBMiPlatform extends DB2Platform
 
         return $sql;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDateTimeFormatString()
+    {
+        return 'Y-m-d-H.i.s.u';
+    }
 }
