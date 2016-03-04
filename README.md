@@ -2,8 +2,8 @@
 
 Doctrine DBAL module for DB2 on the IBM i platform.
 
-The majority of the work done to make DBAL work on i was done by @cassvail and
-can be seen in the PR doctrine/dbal#910 - credit where it's due!
+The majority of the work done to make DBAL work on i was done by [@cassvail](https://github.com/cassvail) and
+can be seen in the PR [doctrine/dbal#910](https://github.com/doctrine/dbal/pull/910) - credit where it's due!
 
 # Usage
 
