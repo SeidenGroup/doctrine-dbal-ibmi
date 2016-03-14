@@ -21,9 +21,9 @@ namespace DoctrineDbalIbmi\Driver;
 
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\DB2Platform;
-use Doctrine\DBAL\Schema\DB2SchemaManager;
 use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 use DoctrineDbalIbmi\Schema\DB2IBMiSchemaManager;
+use DoctrineDbalIbmi\Schema\DB2LUWSchemaManager;
 
 /**
  * Abstract base implementation of the {@link Doctrine\DBAL\Driver} interface for IBM DB2 based drivers.
@@ -68,7 +68,7 @@ abstract class AbstractDB2Driver implements Driver
         if (PHP_OS === static::SYSTEM_IBMI) {
             return new DB2IBMiSchemaManager($conn);
         } else {
-            return new DB2SchemaManager($conn);
+            return new DB2LUWSchemaManager($conn);
         }
     }
 }
