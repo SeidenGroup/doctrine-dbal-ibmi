@@ -20,7 +20,6 @@
 namespace DoctrineDbalIbmi\Schema;
 
 use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\DB2SchemaManager;
 use Doctrine\DBAL\Types\Type;
 
 /**
@@ -31,7 +30,7 @@ use Doctrine\DBAL\Types\Type;
  * @author Cassiano Vailati <c.vailati@esconsulting.it>
  * @author James Titcumb <james@asgrim.com>
  */
-class DB2IBMiSchemaManager extends DB2SchemaManager
+class DB2IBMiSchemaManager extends DB2LUWSchemaManager
 {
     /**
      * {@inheritdoc}
