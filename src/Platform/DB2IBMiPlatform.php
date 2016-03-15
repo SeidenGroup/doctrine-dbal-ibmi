@@ -192,7 +192,7 @@ class DB2IBMiPlatform extends DB2Platform
     /**
      * {@inheritDoc}
      */
-    public function getListTableForeignKeysSQL($table)
+    public function getListTableForeignKeysSQL($table, $database = null)
     {
         return "
             SELECT DISTINCT
@@ -210,6 +210,7 @@ class DB2IBMiPlatform extends DB2Platform
                 rc.UNIQUE_CONSTRAINT_SCHEMA = pk.CONSTRAINT_SCHEMA AND
                 rc.UNIQUE_CONSTRAINT_NAME = pk.CONSTRAINT_NAME
             WHERE fk.TABLE_NAME = UPPER('" . $table . "')
+            " . ($database !== null ? "AND fk.TABLE_SCHEMA = UPPER('" . $database . "')" : '') . "
         ";
     }
 
