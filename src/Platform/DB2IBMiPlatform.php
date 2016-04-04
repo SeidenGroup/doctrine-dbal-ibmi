@@ -234,6 +234,12 @@ class DB2IBMiPlatform extends DB2Platform
         $limit = (int) $limit;
         $offset = (int) (($offset)?:0);
 
+        // In cases where an offset isn't required, we can use the much simpler FETCH FIRST (as the ROW_NUMBER() method
+        // leaves a lot to be desired (i.e. breaks in some cases)
+        if ($offset === 0) {
+            return sprintf('%s FETCH FIRST %d ROWS ONLY', $query, $limit);
+        }
+
         $orderBy = stristr($query, 'ORDER BY');
 
         $orderByBlocks = preg_split('/\s*ORDER\s+BY/', $orderBy );
