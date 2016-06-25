@@ -215,6 +215,22 @@ class DB2IBMiPlatform extends DB2Platform
     }
 
     /**
+     * @return string
+     *
+     * @throws \Doctrine\DBAL\DBALException If not supported on this platform.
+     */
+    public function getListDatabasesSQL()
+    {
+        return "
+            SELECT
+              DISTINCT TABLE_SCHEMA
+            FROM
+                SYSIBM.tables t
+            ORDER BY TABLE_SCHEMA
+        ";
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getCreateDatabaseSQL($database)
