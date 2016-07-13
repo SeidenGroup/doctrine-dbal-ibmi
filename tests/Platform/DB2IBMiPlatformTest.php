@@ -2,6 +2,7 @@
 
 namespace DoctrineDbalIbmi\Tests\Platform;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Types\Types;
 use DoctrineDbalIbmi\Driver\DB2Driver;
 use DoctrineDbalIbmi\Tests\AbstractTestCase;
@@ -99,30 +100,21 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
     public function limitQueryProvider(): iterable
     {
         yield [
-            'SELECT DOCTRINE_TBL.*'
-            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
-            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
-            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 3 AND 7',
+            'SELECT * FROM mytable LIMIT 5 OFFSET 2',
             'SELECT * FROM mytable',
             5,
             2,
         ];
 
         yield [
-            'SELECT DOCTRINE_TBL.*'
-            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
-            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
-            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 2 AND 2',
+            'SELECT * FROM mytable LIMIT 1 OFFSET 1',
             'SELECT * FROM mytable',
             1,
             1,
         ];
 
         yield [
-            'SELECT DOCTRINE_TBL.*'
-            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
-            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
-            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 3 AND 3',
+            'SELECT * FROM mytable LIMIT 1 OFFSET 2',
             'SELECT * FROM mytable',
             1,
             2,
@@ -150,10 +142,7 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         ];
 
         yield [
-            'SELECT DOCTRINE_TBL.*'
-            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
-            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
-            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 2 AND 1',
+            'SELECT * FROM mytable',
             'SELECT * FROM mytable',
             null,
             1,
@@ -167,9 +156,23 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         ];
 
         yield [
-            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 1 ROWS ONLY',
+            'SELECT * FROM mytable ORDER BY created_at LIMIT 1',
             'SELECT * FROM mytable ORDER BY created_at',
             1,
+            0,
+        ];
+
+        yield [
+            'SELECT * FROM mytable ORDER BY created_at LIMIT 1',
+            'SELECT * FROM mytable ORDER BY created_at',
+            1,
+            null,
+        ];
+
+        yield [
+            'SELECT * FROM mytable ORDER BY created_at LIMIT 0',
+            'SELECT * FROM mytable ORDER BY created_at',
+            0,
             0,
         ];
 
@@ -181,7 +184,7 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         ];
 
         yield [
-            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 0 ROWS ONLY',
+            'SELECT * FROM mytable ORDER BY created_at LIMIT 0',
             'SELECT * FROM mytable ORDER BY created_at',
             0,
             null,
@@ -199,5 +202,37 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         $platform = $connection->getDatabasePlatform();
 
         self::assertSame($expected, $platform->modifyLimitQuery($sql, $limit, $offset));
+    }
+
+    /**
+     * @return void
+     */
+    public function testLimitQueryWithWNegativeLimit()
+    {
+        $connection = self::getConnection(DB2Driver::class);
+        $platform = $connection->getDatabasePlatform();
+
+        $sql = 'SELECT * FROM mytable';
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Limit must be a positive integer or zero, -1 given');
+
+        $platform->modifyLimitQuery($sql, -1, null);
+    }
+
+    /**
+     * @return void
+     */
+    public function testLimitQueryWithWNegativeOffset()
+    {
+        $connection = self::getConnection(DB2Driver::class);
+        $platform = $connection->getDatabasePlatform();
+
+        $sql = 'SELECT * FROM mytable';
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Offset must be a positive integer or zero, -1 given');
+
+        $platform->modifyLimitQuery($sql, 1, -1);
     }
 }
