@@ -79,4 +79,19 @@ class DB2IBMiConnection extends DB2Connection
             return '.';
         }
     }
+
+    /**
+     *
+     * Retrieves ibm_db2 native resource handle.
+     *
+     * Could be used if part of your application is not using DBAL.
+     *
+     * @return resource
+     */
+    public function getWrappedResourceHandle()
+    {
+        $connProperty = new \ReflectionProperty(DB2Connection::class, '_conn');
+        $connProperty->setAccessible(true);
+        return $connProperty->getValue($this);
+    }
 }
