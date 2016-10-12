@@ -1,0 +1,15 @@
+<?php
+
+return [
+    'driverClass' => \DoctrineDbalIbmi\Driver\DB2Driver::class,
+    'host' => 'localhost',
+    'user' => '...',
+    'password' => '...',
+    'dbname' => '...', // Look up value with WRKRDBDIRE
+    'persistent' => true,
+    'driverOptions' => [
+        'i5_naming' => DB2_I5_NAMING_OFF,
+        'i5_lib' => '...',
+        'i5_commit' => DB2_I5_TXN_NO_COMMIT,
+    ],
+];
