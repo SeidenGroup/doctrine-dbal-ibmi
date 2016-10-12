@@ -1,5 +1,7 @@
 # doctrine-dbal-ibmi
 
+[![Build Status](http://idevusr016.idevcloud.com:9090/buildStatus/icon?job=doctrine-dbal-ibmi)](http://idevusr016.idevcloud.com:9090/job/doctrine-dbal-ibmi)
+
 Doctrine DBAL module for DB2 on the IBM i platform.
 
 The majority of the work done to make DBAL work on i was done by [@cassvail](https://github.com/cassvail) and
