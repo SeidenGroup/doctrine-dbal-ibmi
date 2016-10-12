@@ -32,6 +32,10 @@ class Bootstrap
                 __DIR__ . '/entity/',
             ], true);
 
+            if (!file_exists(__DIR__ . '/config/local.php')) {
+                throw new \PHPUnit_Framework_SkippedTestError('test/config/local.php not found');
+            }
+
             $connection = require __DIR__ . '/config/local.php';
 
             self::$entityManager = EntityManager::create($connection, $configuration);
