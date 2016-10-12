@@ -7,6 +7,10 @@
         {
             "name": "James Titcumb",
             "email": "james@asgrim.com"
+        },
+        {
+            "name": "Cassiano Vailati",
+            "email": "c.vailati@esconsulting.it"
         }
     ],
     "require": {
