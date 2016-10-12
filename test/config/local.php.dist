@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'driverClass' =>\DoctrineDbalIbmi\Driver\DB2Driver::class,
+    'driverClass' => \DoctrineDbalIbmi\Driver\DB2Driver::class,
     'host' => 'localhost',
     'user' => '...',
     'password' => '...',

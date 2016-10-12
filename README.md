@@ -14,6 +14,8 @@ First, install with Composer:
 $ composer require alanseiden/doctrine-dbal-ibmi
 ```
 
+## Configuration
+
 In your connection configuration, use this specific `DB2Driver` class, for
 example, when configuring for a Zend Expressive application:
 
@@ -33,6 +35,7 @@ return [
                     'persistent' => true,
                     'driverOptions' => [
                         'i5_naming' => DB2_I5_NAMING_OFF,
+                        'i5_commit' => DB2_I5_TXN_NO_COMMIT,
                         'i5_lib' => '...',
                     ],
                 ],
@@ -41,3 +44,33 @@ return [
     ],
 ];
 ```
+
+## Manual Configuration
+
+You can manually configure an `EntityManager` like so:
+
+```php
+<?php
+
+$configuration = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([
+    __DIR__ . '/../path/to/your/entities/',
+], true);
+
+$connection = [
+    'driverClass' => \DoctrineDbalIbmi\Driver\DB2Driver::class,
+    'host' => '...', // Replace this
+    'user' => '...', // Replace this
+    'password' => '...', // Replace this
+    'dbname' => '...', // Look up value with WRKRDBDIRE
+    'persistent' => true,
+    'driverOptions' => [
+        'i5_lib' => '...', // Replace this
+        'i5_naming' => DB2_I5_NAMING_OFF,
+        'i5_commit' => DB2_I5_TXN_NO_COMMIT,
+    ],
+];
+
+$entityManager = \Doctrine\ORM\EntityManager::create($connection, $configuration);
+```
+
+You can then use this instance of `$entityManager`.
