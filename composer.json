@@ -10,7 +10,12 @@
         }
     ],
     "require": {
+        "php": "^5.6|^7.0|^7.1",
         "doctrine/dbal": "^2.5"
+    },
+    "require-dev": {
+        "doctrine/orm": "dev-master",
+        "phpunit/phpunit": "^5.6"
     },
     "autoload": {
         "psr-4": {
