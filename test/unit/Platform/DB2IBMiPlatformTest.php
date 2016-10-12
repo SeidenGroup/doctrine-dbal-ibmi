@@ -61,4 +61,32 @@ class DB2IBMiPlatformTest extends \PHPUnit_Framework_TestCase
 
         self::assertSame($expectedMapping, $platform->getDoctrineTypeMapping($dbType));
     }
+
+    public function varcharTypeDeclarationProvider()
+    {
+        return [
+            ['VARCHAR(1024)', ['length' => 1024]],
+            ['VARCHAR(255)', []],
+            ['VARCHAR(255)', ['length' => 0]],
+            ['CHAR(1024)', ['fixed' => true, 'length' => 1024]],
+            ['CHAR(255)', ['fixed' => true]],
+            ['CHAR(255)', ['fixed' => true, 'length' => 0]],
+            ['CLOB(1M)', ['length' => 5000]],
+        ];
+    }
+
+    /**
+     * @param string $expectedSql
+     * @param array $fieldDef
+     * @throws \Doctrine\ORM\ORMException
+     * @dataProvider varcharTypeDeclarationProvider
+     */
+    public function testVarcharTypeDeclarationSQLSnippet($expectedSql, array $fieldDef)
+    {
+        $em = Bootstrap::getEntityManager();
+        /** @var DB2IBMiPlatform $platform */
+        $platform = $em->getConnection()->getDatabasePlatform();
+
+        self::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));
+    }
 }
