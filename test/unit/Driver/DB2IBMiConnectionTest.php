@@ -11,7 +11,7 @@ class DB2IBMiConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $em = Bootstrap::getEntityManager();
 
-        $connection = $em->getConnection();
+        $connection = $em->getConnection()->getWrappedConnection();
 
         self::assertInstanceOf(DB2IBMiConnection::class, $connection);
     }
