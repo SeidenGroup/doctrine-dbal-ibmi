@@ -89,4 +89,19 @@ class DB2IBMiPlatformTest extends \PHPUnit_Framework_TestCase
 
         self::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));
     }
+
+    public function testDoModifyLimitQuery()
+    {
+        $dbal = Bootstrap::getDbalConnection();
+
+        $qb = $dbal->createQueryBuilder();
+        $qb->select('id', 'date_created', 'item_name')
+            ->from('foo')
+            ->orderBy('date_created', 'DESC')
+            ->setMaxResults(1);
+
+        $r = $dbal->query($qb->getSQL());
+
+        var_dump($r);
+    }
 }
