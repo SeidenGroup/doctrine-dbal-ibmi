@@ -40,7 +40,7 @@ class DB2IBMiConnection extends DB2Connection
 
         $res = $stmt->fetch();
 
-        return $res['VAL'];
+        return $res['val'];
     }
 
     /**
