@@ -219,89 +219,29 @@ class DB2IBMiPlatform extends DB2Platform
      */
     protected function doModifyLimitQuery($query, $limit, $offset = null)
     {
-        if ($limit === null && $offset === null) {
+        $where = array();
+
+        if ($offset > 0) {
+            $where[] = sprintf('db22.DC_ROWNUM >= %d', $offset + 1);
+        }
+
+        if ($limit !== null) {
+            $where[] = sprintf('db22.DC_ROWNUM <= %d', $offset + $limit);
+        }
+
+        if (empty($where)) {
             return $query;
         }
 
-        $limit = (int) $limit;
-        $offset = (int) (($offset)?:0);
+        // retrieve ORDER BY string
+        $orderBy = $this->getOrderByForOver($query);
 
-        // In cases where an offset isn't required, we can use the much simpler FETCH FIRST (as the ROW_NUMBER() method
-        // leaves a lot to be desired (i.e. breaks in some cases)
-        if ($offset === 0) {
-            return sprintf('%s FETCH FIRST %d ROWS ONLY', $query, $limit);
-        }
-
-        $orderBy = stristr($query, 'ORDER BY');
-
-        $orderByBlocks = preg_split('/\s*ORDER\s+BY/', $orderBy );
-
-        // Reversing arrays beacause external order by is more important
-        $orderByBlocks = array_reverse($orderByBlocks);
-
-        // Splitting ORDER BY
-        $orderByParts = array();
-        foreach ($orderByBlocks as $orderByBlock){
-            $blockArray   = explode(',', $orderByBlock);
-            foreach ($blockArray as $block) {
-                $block = trim($block);
-                if (!empty($block)) {
-                    $orderByParts[] = $block;
-                }
-            }
-        }
-
-        // Clear ORDER BY
-        foreach ($orderByParts as &$orderByPart) {
-
-            $orderByPart = preg_replace('/ORDER\s+BY\s+([^\)]*)(.*)/', '$1', 'ORDER BY '.$orderByPart);
-        }
-
-        $orderByColumns = array();
-
-        // Split ORDER BY into parts
-        foreach ($orderByParts as &$part) {
-
-            if (preg_match('/(([^\s]*)\.)?([^\.\s]*)\s*(ASC|DESC)?/i', trim($part), $matches)) {
-                $orderByColumns[] = array(
-                    'column'    => $matches[3],
-                    'hasTable'  => ( !empty($matches[2])),
-                    'sort'      => isset($matches[4]) ? $matches[4] : null,
-                    'table'     => empty($matches[2]) ? '[^\.\s]*' : $matches[2]
-                );
-            }
-        }
-
-        // Find alias for each colum used in ORDER BY
-        if ( ! empty($orderByColumns)) {
-            foreach ($orderByColumns as $column) {
-
-                $pattern = sprintf('/%s\.%s\s+(?:AS\s+)?([^,\s)]+)/i', $column['table'], $column['column']);
-                $overColumn = preg_match($pattern, $query, $matches)
-                    ? ($column['hasTable'] ? $column['table']  . '.' : '') . $column['column']
-                    : $column['column'];
-
-                if (isset($column['sort'])) {
-                    $overColumn .= ' ' . $column['sort'];
-                }
-
-                $overColumns[] = $overColumn;
-            }
-        }
-
-        // Replace only first occurrence of FROM with $over to prevent changing FROM also in subqueries.
-        if ( ! $orderBy) {
-            $over = '';
-        }
-        else
-        {
-            $over  = 'ORDER BY ' . implode(', ', $overColumns);
-        }
-
-        $sql = 'SELECT DOCTRINE_TBL.* FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER(' . $over . ') AS DOCTRINE_ROWNUM '.
-            'FROM (' . $query . ') DOCTRINE_TBL1) DOCTRINE_TBL WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN ' . ($offset+1) .' AND ' . ($offset+$limit);
-
-        return $sql;
+        return sprintf(
+            'SELECT db22.* FROM (SELECT db21.*, ROW_NUMBER() OVER(%s) AS DC_ROWNUM FROM (%s) db21) db22 WHERE %s',
+            $orderBy,
+            $query,
+            implode(' AND ', $where)
+        );
     }
 
     /**
@@ -310,5 +250,79 @@ class DB2IBMiPlatform extends DB2Platform
     public function getDateTimeFormatString()
     {
         return 'Y-m-d-H.i.s.u';
+    }
+
+    /**
+     * Prepare ORDER BY string for OVER() if applicable
+     *
+     * @param string $query
+     *
+     * @return string
+     */
+    private function getOrderByForOver(string $query)
+    {
+        //determine if 'ORDER BY' is part of the query
+        $orderByPosition = strripos($query, 'order by');
+
+        // early return if ORDER BY not found in query string
+        if (false === $orderByPosition) {
+            return '';
+        }
+
+        // build dictionary if available
+        // re-sequence values
+        $queryArray = array_values(
+            // filter out 'AS'
+            array_filter(
+                // split selected columns
+                preg_split(
+                    '/[, ]/',
+                    substr($query, 0, $orderByPosition -1))
+                , function($element) {
+                    // don't return 'AS' and empty elements
+                    return (
+                        strtoupper($element) !== 'AS'
+                        && trim($element !== '')
+                        && $element !== false
+                        );
+                }
+            )
+        );
+
+        $orderByArray = explode(',', substr($query, $orderByPosition + strlen('ORDER BY')));
+
+        foreach ($orderByArray as $orderIndex => $orderValue) {
+            $splitOrder = array_filter(explode(' ', $orderValue));
+
+            foreach ($splitOrder as $splitIndex => $splitValue) {
+                switch (strtoupper($splitValue)) {
+                    case 'ASC':
+                        // no break
+                    case 'DESC':
+                        break;
+                    default:
+                        $arrayFound = array_search($splitValue, $queryArray);
+
+                        $arrayPosition = substr(trim($splitValue), 0, 6) === 'dctrn_' ? 0 : 1;
+
+                        $splitOrder[$splitIndex] = $arrayFound === false ||
+                        $arrayFound >= count($queryArray) ||
+                        $queryArray[$arrayFound + $arrayPosition] === ""
+                            ? $splitValue
+                            : $queryArray[$arrayFound + $arrayPosition];
+                            break;
+                }
+            }
+
+            $orderByArray[$orderIndex] = array_filter($splitOrder);
+        }
+
+        foreach ($orderByArray as $orderIndex => $orderValue) {
+            $orderByArray[$orderIndex] = implode(' ', $orderValue);
+        }
+
+        $orderByArray[0] = 'ORDER BY ' . $orderByArray[0];
+
+        return implode(',', $orderByArray);
     }
 }
