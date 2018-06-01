@@ -1,29 +1,30 @@
 {
-    "name": "alanseiden/doctrine-dbal-ibmi",
-    "description": "Doctrine DBAL module for DB2 on the IBM i platform",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "James Titcumb",
-            "email": "james@asgrim.com"
-        },
-        {
-            "name": "Cassiano Vailati",
-            "email": "c.vailati@esconsulting.it"
+    "name" : "guidofaecke/doctrine-dbal-ibmi",
+    "description" : "Doctrine DBAL module for DB2 on the IBM i platform",
+    "type" : "library",
+    "license" : "MIT",
+    "authors" : [{
+            "name" : "James Titcumb",
+            "email" : "james@asgrim.com"
+        }, {
+            "name" : "Cassiano Vailati",
+            "email" : "c.vailati@esconsulting.it"
+        }, {
+            "name" : "Guido Faecke",
+            "email" : "guido@emcent.com"
         }
     ],
-    "require": {
-        "php": "^5.6|^7.0|^7.1",
-        "doctrine/dbal": "^2.5"
+    "require" : {
+        "php" : "^5.6|^7.0|^7.1",
+        "doctrine/dbal" : "^2.5"
     },
-    "require-dev": {
-        "doctrine/orm": "dev-master",
-        "phpunit/phpunit": "^5.6"
+    "require-dev" : {
+        "doctrine/orm" : "dev-master",
+        "phpunit/phpunit" : "^5.6"
     },
-    "autoload": {
-        "psr-4": {
-            "DoctrineDbalIbmi\\": "src/"
+    "autoload" : {
+        "psr-4" : {
+            "DoctrineDbalIbmi\\" : "src/"
         }
     }
 }
