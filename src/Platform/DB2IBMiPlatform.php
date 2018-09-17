@@ -217,91 +217,22 @@ class DB2IBMiPlatform extends DB2Platform
     /**
      * {@inheritDoc}
      */
-    protected function doModifyLimitQuery($query, $limit, $offset = null)
-    {
+    protected function doModifyLimitQuery($query, $limit, $offset = null) {
         if ($limit === null && $offset === null) {
             return $query;
         }
 
-        $limit = (int) $limit;
-        $offset = (int) (($offset)?:0);
+        if (null !== $offset) {
+            $limit = (int)$limit;
+            $offset = (int)$offset;
 
-        // In cases where an offset isn't required, we can use the much simpler FETCH FIRST (as the ROW_NUMBER() method
-        // leaves a lot to be desired (i.e. breaks in some cases)
-        if ($offset === 0) {
-            return sprintf('%s FETCH FIRST %d ROWS ONLY', $query, $limit);
+            return 'select * from ( select inner2_.*, rownumber() over(order by order of inner2_) as rownumber_ from ( '
+                . $query . ' fetch first ' . $limit . ' rows only ) as inner2_ ) as inner1_ where rownumber_ > '
+                . $offset . ' order by rownumber_';
+
+        } else {
+            return $query . ' fetch first ' . $limit . ' rows only';
         }
-
-        $orderBy = stristr($query, 'ORDER BY');
-
-        $orderByBlocks = preg_split('/\s*ORDER\s+BY/', $orderBy );
-
-        // Reversing arrays beacause external order by is more important
-        $orderByBlocks = array_reverse($orderByBlocks);
-
-        // Splitting ORDER BY
-        $orderByParts = array();
-        foreach ($orderByBlocks as $orderByBlock){
-            $blockArray   = explode(',', $orderByBlock);
-            foreach ($blockArray as $block) {
-                $block = trim($block);
-                if (!empty($block)) {
-                    $orderByParts[] = $block;
-                }
-            }
-        }
-
-        // Clear ORDER BY
-        foreach ($orderByParts as &$orderByPart) {
-
-            $orderByPart = preg_replace('/ORDER\s+BY\s+([^\)]*)(.*)/', '$1', 'ORDER BY '.$orderByPart);
-        }
-
-        $orderByColumns = array();
-
-        // Split ORDER BY into parts
-        foreach ($orderByParts as &$part) {
-
-            if (preg_match('/(([^\s]*)\.)?([^\.\s]*)\s*(ASC|DESC)?/i', trim($part), $matches)) {
-                $orderByColumns[] = array(
-                    'column'    => $matches[3],
-                    'hasTable'  => ( !empty($matches[2])),
-                    'sort'      => isset($matches[4]) ? $matches[4] : null,
-                    'table'     => empty($matches[2]) ? '[^\.\s]*' : $matches[2]
-                );
-            }
-        }
-
-        // Find alias for each colum used in ORDER BY
-        if ( ! empty($orderByColumns)) {
-            foreach ($orderByColumns as $column) {
-
-                $pattern = sprintf('/%s\.%s\s+(?:AS\s+)?([^,\s)]+)/i', $column['table'], $column['column']);
-                $overColumn = preg_match($pattern, $query, $matches)
-                    ? ($column['hasTable'] ? $column['table']  . '.' : '') . $column['column']
-                    : $column['column'];
-
-                if (isset($column['sort'])) {
-                    $overColumn .= ' ' . $column['sort'];
-                }
-
-                $overColumns[] = $overColumn;
-            }
-        }
-
-        // Replace only first occurrence of FROM with $over to prevent changing FROM also in subqueries.
-        if ( ! $orderBy) {
-            $over = '';
-        }
-        else
-        {
-            $over  = 'ORDER BY ' . implode(', ', $overColumns);
-        }
-
-        $sql = 'SELECT DOCTRINE_TBL.* FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER(' . $over . ') AS DOCTRINE_ROWNUM '.
-            'FROM (' . $query . ') DOCTRINE_TBL1) DOCTRINE_TBL WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN ' . ($offset+1) .' AND ' . ($offset+$limit);
-
-        return $sql;
     }
 
     /**
