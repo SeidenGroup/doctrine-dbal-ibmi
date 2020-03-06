@@ -12,6 +12,9 @@ class DB2IBMiConnectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testCorrectConnectionClassIsUsed()
     {
+        if (!extension_loaded('ibm_db2')) {
+            $this->markTestSkipped('ibm_db2 extension not loaded');
+        }
         $em = Bootstrap::getEntityManager();
 
         $connection = $em->getConnection()->getWrappedConnection();
