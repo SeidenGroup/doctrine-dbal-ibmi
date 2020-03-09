@@ -55,6 +55,9 @@ class DB2IBMiPlatformTest extends \PHPUnit_Framework_TestCase
      */
     public function testTypeMappings($dbType, $expectedMapping)
     {
+        if (!extension_loaded('ibm_db2')) {
+            $this->markTestSkipped('ibm_db2 extension not loaded');
+        }
         $em = Bootstrap::getEntityManager();
         /** @var DB2IBMiPlatform $platform */
         $platform = $em->getConnection()->getDatabasePlatform();
@@ -83,6 +86,9 @@ class DB2IBMiPlatformTest extends \PHPUnit_Framework_TestCase
      */
     public function testVarcharTypeDeclarationSQLSnippet($expectedSql, array $fieldDef)
     {
+        if (!extension_loaded('ibm_db2')) {
+            $this->markTestSkipped('ibm_db2 extension not loaded');
+        }
         $em = Bootstrap::getEntityManager();
         /** @var DB2IBMiPlatform $platform */
         $platform = $em->getConnection()->getDatabasePlatform();

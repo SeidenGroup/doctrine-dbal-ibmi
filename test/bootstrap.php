@@ -24,8 +24,8 @@ class Bootstrap
     public static function getEntityManager()
     {
         if (null === self::$entityManager) {
-            if (!extension_loaded('ibm_db2')) {
-                throw new \PHPUnit_Framework_SkippedTestError('DB2 connection is unavailable, skipping test');
+            if (!extension_loaded('ibm_db2') && !extension_loaded('pdo')) {
+                throw new \PHPUnit_Framework_SkippedTestError('Neither DB2 nor PDO connections are unavailable, skipping test');
             }
 
             $configuration = Setup::createAnnotationMetadataConfiguration([

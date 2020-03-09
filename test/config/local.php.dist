@@ -1,5 +1,6 @@
 <?php
 
+// For use with ibm_db2 extension
 return [
     'driverClass' => \DoctrineDbalIbmi\Driver\DB2Driver::class,
     'host' => 'localhost',
@@ -12,4 +13,13 @@ return [
         'i5_lib' => '...',
         'i5_commit' => DB2_I5_TXN_NO_COMMIT,
     ],
+];
+
+// For use with odbc and pdo extension
+return [
+    'driverClass' => \DoctrineDbalIbmi\Driver\OdbcDriver::class,
+    'persistent' => false,
+    'dsn' => "DSN=*LOCAL;",
+    'username' => 'CHANGEME',
+    'password' => 'METOO',
 ];
