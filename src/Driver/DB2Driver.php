@@ -31,7 +31,7 @@ class DB2Driver extends AbstractDB2Driver
             $password = null;
         }
 
-        if (PHP_OS === static::SYSTEM_IBMI) {
+        if (static::isIbmi()) {
             return new DB2IBMiConnection($params, $username, $password, $driverOptions);
         } else {
             return new DB2Connection($params, $username, $password, $driverOptions);
