@@ -219,7 +219,7 @@ class DB2IBMiPlatform extends DB2Platform
      */
     protected function doModifyLimitQuery($query, $limit, $offset = null)
     {
-        if ($limit === null && $offset === null) {
+        if ($limit === null && $offset <= 0) {
             return $query;
         }
 
