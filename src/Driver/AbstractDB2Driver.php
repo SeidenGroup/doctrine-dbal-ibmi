@@ -11,6 +11,12 @@ use DoctrineDbalIbmi\Schema\DB2LUWSchemaManager;
 abstract class AbstractDB2Driver implements Driver
 {
     const SYSTEM_IBMI = 'AIX';
+    const SYSTEM_IBMI_OS400 = 'OS400';
+
+    public static function isIbmi()
+    {
+        return (PHP_OS === static::SYSTEM_IBMI || PHP_OS === static::SYSTEM_IBMI_OS400);
+    }
 
     /**
      * {@inheritdoc}
@@ -27,7 +33,7 @@ abstract class AbstractDB2Driver implements Driver
      */
     public function getDatabasePlatform()
     {
-        if (PHP_OS === static::SYSTEM_IBMI) {
+        if (static::isIbmi()) {
             return new DB2IBMiPlatform();
         } else {
             return new DB2Platform();
@@ -39,7 +45,7 @@ abstract class AbstractDB2Driver implements Driver
      */
     public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
     {
-        if (PHP_OS === static::SYSTEM_IBMI) {
+        if (static::isIbmi()) {
             return new DB2IBMiSchemaManager($conn);
         } else {
             return new DB2LUWSchemaManager($conn);
