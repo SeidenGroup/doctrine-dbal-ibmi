@@ -1,8 +1,8 @@
 {
     "name": "alanseiden/doctrine-dbal-ibmi",
     "description": "Doctrine DBAL module for DB2 on the IBM i platform",
-    "type": "library",
     "license": "MIT",
+    "type": "library",
     "authors": [
         {
             "name": "James Titcumb",
@@ -25,5 +25,8 @@
         "psr-4": {
             "DoctrineDbalIbmi\\": "src/"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
