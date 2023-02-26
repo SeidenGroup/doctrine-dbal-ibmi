@@ -3,7 +3,7 @@
 namespace DoctrineDbalIbmi\Driver;
 
 use Doctrine\DBAL\Driver\IBMDB2\DB2Connection;
-use Doctrine\DBAL\Driver\PDOConnection;
+use Doctrine\DBAL\Driver\PDO\Connection;
 
 /**
  * IBMi Db2 Connection.
@@ -12,19 +12,22 @@ use Doctrine\DBAL\Driver\PDOConnection;
  * @author Cassiano Vailati <c.vailati@esconsulting.it>
  * @author James Titcumb <james@asgrim.com>
  */
-class OdbcIBMiConnection extends PDOConnection
+class OdbcIBMiConnection extends Connection
 {
+    /**
+     * @var mixed[]
+     */
     protected $driverOptions = array();
 
     /**
-     * @param array  $params
-     * @param string $username
-     * @param string $password
-     * @param array  $driverOptions
+     * @param mixed[] $params
+     * @param string  $username
+     * @param string  $password
+     * @param mixed[] $driverOptions
      *
      * @throws \Doctrine\DBAL\Driver\IBMDB2\DB2Exception
      */
-    public function __construct($params, $username, $password, $driverOptions = array())
+    public function __construct(array $params, $username, $password, array $driverOptions = array())
     {
         $this->driverOptions = $driverOptions;
         $this->driverOptions[\PDO::ATTR_PERSISTENT] = false;
@@ -44,6 +47,8 @@ class OdbcIBMiConnection extends PDOConnection
         $stmt->execute();
 
         $res = $stmt->fetch();
+
+        assert(is_array($res));
 
         return $res['VAL'];
     }
@@ -69,7 +74,6 @@ class OdbcIBMiConnection extends PDOConnection
     }
 
     /**
-     *
      * Retrieves ibm_db2 native resource handle.
      *
      * Could be used if part of your application is not using DBAL.
@@ -80,11 +84,15 @@ class OdbcIBMiConnection extends PDOConnection
     {
         $connProperty = new \ReflectionProperty(DB2Connection::class, '_conn');
         $connProperty->setAccessible(true);
-        return $connProperty->getValue($this);
+        $handle = $connProperty->getValue($this);
+
+        assert(is_resource($handle));
+
+        return $handle;
     }
 
     /**
-     * @return bool
+     * @return true
      */
     public function requiresQueryForServerVersion()
     {

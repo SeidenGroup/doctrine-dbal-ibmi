@@ -11,10 +11,13 @@ use PHPUnit\Framework\TestCase;
  */
 class DB2IBMiConnectionTest extends TestCase
 {
+    /**
+     * @return void
+     */
     public function testCorrectConnectionClassIsUsed()
     {
         if (!extension_loaded('ibm_db2')) {
-            $this->markTestSkipped('ibm_db2 extension not loaded');
+            self::markTestSkipped('ibm_db2 extension not loaded');
         }
         $em = Bootstrap::getEntityManager();
 

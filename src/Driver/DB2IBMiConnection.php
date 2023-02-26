@@ -13,17 +13,20 @@ use Doctrine\DBAL\Driver\IBMDB2\DB2Connection;
  */
 class DB2IBMiConnection extends DB2Connection
 {
+    /**
+     * @var mixed[]
+     */
     protected $driverOptions = array();
 
     /**
-     * @param array  $params
-     * @param string $username
-     * @param string $password
-     * @param array  $driverOptions
+     * @param mixed[]     $params
+     * @param string|null $username
+     * @param string|null $password
+     * @param mixed[]     $driverOptions
      *
      * @throws \Doctrine\DBAL\Driver\IBMDB2\DB2Exception
      */
-    public function __construct(array $params, $username, $password, $driverOptions = array())
+    public function __construct(array $params, $username, $password, array $driverOptions = array())
     {
         $this->driverOptions = $driverOptions;
         parent::__construct($params, $username, $password, $driverOptions);
@@ -39,6 +42,8 @@ class DB2IBMiConnection extends DB2Connection
         $stmt->execute();
 
         $res = $stmt->fetch();
+
+        assert(is_array($res));
 
         return $res['VAL'];
     }
@@ -64,7 +69,6 @@ class DB2IBMiConnection extends DB2Connection
     }
 
     /**
-     *
      * Retrieves ibm_db2 native resource handle.
      *
      * Could be used if part of your application is not using DBAL.
@@ -75,6 +79,10 @@ class DB2IBMiConnection extends DB2Connection
     {
         $connProperty = new \ReflectionProperty(DB2Connection::class, '_conn');
         $connProperty->setAccessible(true);
-        return $connProperty->getValue($this);
+        $handle = $connProperty->getValue($this);
+
+        assert(is_resource($handle));
+
+        return $handle;
     }
 }

@@ -15,12 +15,14 @@
     ],
     "require": {
         "php": "^7.0",
-        "doctrine/dbal": "^2.6"
+        "doctrine/dbal": "^2.13.9"
     },
     "require-dev": {
         "ext-ibm_db2": "*",
         "ext-pdo_odbc": "*",
-        "doctrine/orm": "^2.5",
+        "doctrine/orm": "^2.12",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-strict-rules": "^1.5",
         "phpunit/phpunit": "^6.5 || ^9.6"
     },
     "suggest": {

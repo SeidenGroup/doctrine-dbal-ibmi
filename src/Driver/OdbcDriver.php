@@ -40,6 +40,8 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
     {
         $params = $conn->getParams();
 
+        assert(is_string($params['dbname']));
+
         return $params['dbname'];
     }
 

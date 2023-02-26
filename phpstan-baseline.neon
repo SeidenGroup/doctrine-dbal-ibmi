@@ -1,0 +1,91 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#2 \\$username of class Doctrine\\\\DBAL\\\\Driver\\\\IBMDB2\\\\DB2Connection constructor expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Driver/DB2Driver.php
+
+		-
+			message: "#^Parameter \\#3 \\$password of class Doctrine\\\\DBAL\\\\Driver\\\\IBMDB2\\\\DB2Connection constructor expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Driver/DB2Driver.php
+
+		-
+			message: "#^Parameter \\#2 \\$username of method Doctrine\\\\DBAL\\\\Driver\\\\IBMDB2\\\\DB2Connection\\:\\:__construct\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Driver/DB2IBMiConnection.php
+
+		-
+			message: "#^Parameter \\#3 \\$password of method Doctrine\\\\DBAL\\\\Driver\\\\IBMDB2\\\\DB2Connection\\:\\:__construct\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Driver/DB2IBMiConnection.php
+
+		-
+			message: "#^Method DoctrineDbalIbmi\\\\Schema\\\\DB2IBMiSchemaManager\\:\\:listSequences\\(\\) should return array\\<Doctrine\\\\DBAL\\\\Schema\\\\Sequence\\> but returns array\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Method DoctrineDbalIbmi\\\\Schema\\\\DB2IBMiSchemaManager\\:\\:listTableNames\\(\\) should return array\\<string\\> but returns array\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getListTableForeignKeysSQL\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getListTablesSQL\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$sequences of method Doctrine\\\\DBAL\\\\Schema\\\\AbstractSchemaManager\\:\\:_getPortableSequencesList\\(\\) expects array\\<array\\>, array given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, mixed given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$tableForeignKeys of method Doctrine\\\\DBAL\\\\Schema\\\\DB2SchemaManager\\:\\:_getPortableTableForeignKeysList\\(\\) expects array\\<array\\>, array given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$tableIndexes of method Doctrine\\\\DBAL\\\\Schema\\\\DB2SchemaManager\\:\\:_getPortableTableIndexesList\\(\\) expects array\\<array\\>, array given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$tables of method Doctrine\\\\DBAL\\\\Schema\\\\DB2SchemaManager\\:\\:_getPortableTablesList\\(\\) expects array\\<array\\>, array given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$views of method Doctrine\\\\DBAL\\\\Schema\\\\AbstractSchemaManager\\:\\:_getPortableViewsList\\(\\) expects array\\<array\\>, array given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Parameter \\#3 \\$tableColumns of method Doctrine\\\\DBAL\\\\Schema\\\\AbstractSchemaManager\\:\\:_getPortableTableColumnList\\(\\) expects array\\<array\\>, array given\\.$#"
+			count: 1
+			path: src/Schema/DB2IBMiSchemaManager.php
+
+		-
+			message: "#^Property DoctrineDbalIbmiTest\\\\Entity\\\\Simple\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: test/entity/Simple.php
+
+		-
+			message: "#^Property DoctrineDbalIbmiTest\\\\Entity\\\\Simple\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: test/entity/Simple.php

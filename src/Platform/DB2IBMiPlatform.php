@@ -67,8 +67,8 @@ class DB2IBMiPlatform extends DB2Platform
      */
     protected function getVarcharTypeDeclarationSQLSnippet($length, $fixed)
     {
-        return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
-            : ($length ? 'VARCHAR(' . $length . ')' : 'VARCHAR(255)');
+        return $fixed ? (0 < $length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
+            : (0 < $length ? 'VARCHAR(' . $length . ')' : 'VARCHAR(255)');
     }
 
     /**
@@ -94,6 +94,8 @@ class DB2IBMiPlatform extends DB2Platform
         if ($field['length'] > $maxLength) {
             return $this->getClobTypeDeclarationSQL($field);
         }
+
+        assert(is_int($field['length']));
 
         return $this->getVarcharTypeDeclarationSQLSnippet($field['length'], $fixed);
     }
@@ -152,6 +154,8 @@ class DB2IBMiPlatform extends DB2Platform
     }
 
     /**
+     * @param string|null $database
+     *
      * {@inheritDoc}
      */
     public function getListTablesSQL($database = null)
@@ -169,6 +173,8 @@ class DB2IBMiPlatform extends DB2Platform
     }
 
     /**
+     * @param string|null $database
+     *
      * {@inheritDoc}
      */
     public function getListViewsSQL($database = null)
@@ -185,6 +191,8 @@ class DB2IBMiPlatform extends DB2Platform
     }
 
     /**
+     * @param string|null $database
+     *
      * {@inheritDoc}
      */
     public function getListTableIndexesSQL($table, $database = null)
@@ -211,6 +219,8 @@ class DB2IBMiPlatform extends DB2Platform
     }
 
     /**
+     * @param string|null $database
+     *
      * {@inheritDoc}
      */
     public function getListTableForeignKeysSQL($table, $database = null)
@@ -269,7 +279,7 @@ class DB2IBMiPlatform extends DB2Platform
         }
 
         $limit = (int) $limit;
-        $offset = (int) (($offset)?:0);
+        $offset = (int) (null !== $offset && 0 !== $offset ? $offset : 0);
 
         // In cases where an offset isn't required, we can use the much simpler FETCH FIRST (as the ROW_NUMBER() method
         // leaves a lot to be desired (i.e. breaks in some cases)
@@ -279,7 +289,11 @@ class DB2IBMiPlatform extends DB2Platform
 
         $orderBy = stristr($query, 'ORDER BY');
 
-        $orderByBlocks = preg_split('/\s*ORDER\s+BY/', $orderBy );
+        assert(false !== $orderBy);
+
+        $orderByBlocks = preg_split('/\s*ORDER\s+BY/', $orderBy);
+
+        assert(false !== $orderByBlocks);
 
         // Reversing arrays beacause external order by is more important
         $orderByBlocks = array_reverse($orderByBlocks);
@@ -290,7 +304,7 @@ class DB2IBMiPlatform extends DB2Platform
             $blockArray   = explode(',', $orderByBlock);
             foreach ($blockArray as $block) {
                 $block = trim($block);
-                if (!empty($block)) {
+                if ('' !== $block) {
                     $orderByParts[] = $block;
                 }
             }
@@ -306,23 +320,26 @@ class DB2IBMiPlatform extends DB2Platform
 
         // Split ORDER BY into parts
         foreach ($orderByParts as &$part) {
+            if (1 === preg_match('/(([^\s]*)\.)?([^\.\s]*)\s*(ASC|DESC)?/i', trim($part), $matches)) {
+                $hasTable = isset($matches[2]) && '' !== $matches[2];
 
-            if (preg_match('/(([^\s]*)\.)?([^\.\s]*)\s*(ASC|DESC)?/i', trim($part), $matches)) {
                 $orderByColumns[] = array(
                     'column'    => $matches[3],
-                    'hasTable'  => ( !empty($matches[2])),
+                    'hasTable'  => $hasTable,
                     'sort'      => isset($matches[4]) ? $matches[4] : null,
-                    'table'     => empty($matches[2]) ? '[^\.\s]*' : $matches[2]
+                    'table'     => ! $hasTable ? '[^\.\s]*' : $matches[2]
                 );
             }
         }
 
-        // Find alias for each colum used in ORDER BY
-        if ( ! empty($orderByColumns)) {
-            foreach ($orderByColumns as $column) {
+        $overColumns = [];
 
+        // Find alias for each colum used in ORDER BY
+        if ([] !== $orderByColumns) {
+            foreach ($orderByColumns as $column) {
                 $pattern = sprintf('/%s\.%s\s+(?:AS\s+)?([^,\s)]+)/i', $column['table'], $column['column']);
-                $overColumn = preg_match($pattern, $query, $matches)
+
+                $overColumn = 1 === preg_match($pattern, $query, $matches)
                     ? ($column['hasTable'] ? $column['table']  . '.' : '') . $column['column']
                     : $column['column'];
 
@@ -335,12 +352,10 @@ class DB2IBMiPlatform extends DB2Platform
         }
 
         // Replace only first occurrence of FROM with $over to prevent changing FROM also in subqueries.
-        if ( ! $orderBy) {
+        if ('' === $orderBy) {
             $over = '';
-        }
-        else
-        {
-            $over  = 'ORDER BY ' . implode(', ', $overColumns);
+        } else {
+            $over = 'ORDER BY ' . implode(', ', $overColumns);
         }
 
         $sql = 'SELECT DOCTRINE_TBL.* FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER(' . $over . ') AS DOCTRINE_ROWNUM '.

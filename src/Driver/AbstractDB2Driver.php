@@ -13,6 +13,9 @@ abstract class AbstractDB2Driver implements Driver
     const SYSTEM_IBMI = 'AIX';
     const SYSTEM_IBMI_OS400 = 'OS400';
 
+    /**
+     * @return bool
+     */
     public static function isIbmi()
     {
         return (PHP_OS === static::SYSTEM_IBMI || PHP_OS === static::SYSTEM_IBMI_OS400);
@@ -24,6 +27,8 @@ abstract class AbstractDB2Driver implements Driver
     public function getDatabase(\Doctrine\DBAL\Connection $conn)
     {
         $params = $conn->getParams();
+
+        assert(is_string($params['dbname']));
 
         return $params['dbname'];
     }
