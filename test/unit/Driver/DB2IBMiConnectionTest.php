@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \DoctrineDbalIbmi\Driver\DB2IBMiConnection
+ *
+ * @requires ibm_db2
+ *
+ * @group ibm_db2
  */
 class DB2IBMiConnectionTest extends TestCase
 {

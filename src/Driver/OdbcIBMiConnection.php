@@ -74,24 +74,6 @@ class OdbcIBMiConnection extends Connection
     }
 
     /**
-     * Retrieves ibm_db2 native resource handle.
-     *
-     * Could be used if part of your application is not using DBAL.
-     *
-     * @return resource
-     */
-    public function getWrappedResourceHandle()
-    {
-        $connProperty = new \ReflectionProperty(DB2Connection::class, '_conn');
-        $connProperty->setAccessible(true);
-        $handle = $connProperty->getValue($this);
-
-        assert(is_resource($handle));
-
-        return $handle;
-    }
-
-    /**
      * @return true
      */
     public function requiresQueryForServerVersion()

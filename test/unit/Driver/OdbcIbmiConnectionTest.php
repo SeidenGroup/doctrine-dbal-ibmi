@@ -8,6 +8,11 @@ use DoctrineDbalIbmi\Driver\OdbcIBMiConnection;
 use DoctrineDbalIbmiTest\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @requires pdo_odbc
+ *
+ * @group pdo_odbc
+ */
 final class OdbcIbmiConnectionTest extends TestCase
 {
     /**

@@ -3,9 +3,10 @@
 namespace DoctrineDbalIbmi\Schema;
 
 use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\DB2SchemaManager;
 use Doctrine\DBAL\Types\Type;
 
-class DB2IBMiSchemaManager extends DB2LUWSchemaManager
+class DB2IBMiSchemaManager extends DB2SchemaManager
 {
     /**
      * {@inheritdoc}
