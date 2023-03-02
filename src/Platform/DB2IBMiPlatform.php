@@ -7,6 +7,23 @@ use Doctrine\DBAL\Platforms\DB2Platform;
 class DB2IBMiPlatform extends DB2Platform
 {
     /**
+     * This method is overridden in order to avoid behavior changes when using doctrine/dbal >= 2.8, because a change
+     * introduced in the limit for the `CHAR` type in the parent class.
+     *
+     * @see https://github.com/doctrine/dbal/pull/3133
+     *
+     * {@inheritDoc}
+     */
+    public function getCharMaxLength(): int
+    {
+        // The maximum length of `CHAR` in bytes is 32765 in DB2 for i, but we are using 255 here in order to keep
+        // consistency with the default values provided by doctrine/dbal 2.x.
+        // @see https://www.ibm.com/docs/en/i/7.1?topic=reference-sql-limits#rbafzlimtabs__btable2.
+
+        return 255;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function initializeDoctrineTypeMappings()
@@ -53,6 +70,34 @@ class DB2IBMiPlatform extends DB2Platform
         return $fixed ? ($length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
             : ($length ? 'VARCHAR(' . $length . ')' : 'VARCHAR(255)');
     }
+
+    /**
+     * This method is overridden in order to backport the fix provided in doctrine/dbal >= 2.8 for the type inference regarding
+     * the maximum length for `CHAR` declared in `getCharMaxLength()`.
+     *
+     * @see https://github.com/doctrine/dbal/pull/3133
+     *
+     * {@inheritDoc}
+     */
+    public function getVarcharTypeDeclarationSQL(array $field)
+    {
+        if ( !isset($field['length'])) {
+            $field['length'] = $this->getVarcharDefaultLength();
+        }
+
+        $fixed = $field['fixed'] ?? false;
+
+        $maxLength = $fixed
+            ? $this->getCharMaxLength()
+            : $this->getVarcharMaxLength();
+
+        if ($field['length'] > $maxLength) {
+            return $this->getClobTypeDeclarationSQL($field);
+        }
+
+        return $this->getVarcharTypeDeclarationSQLSnippet($field['length'], $fixed);
+    }
+
 
     /**
      * {@inheritDoc}
