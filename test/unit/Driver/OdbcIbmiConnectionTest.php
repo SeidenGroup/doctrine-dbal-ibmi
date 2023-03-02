@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DoctrineDbalIbmiTest\Driver;
 
-use DoctrineDbalIbmi\Driver\DB2IBMiConnection;
 use DoctrineDbalIbmi\Driver\OdbcIBMiConnection;
 use DoctrineDbalIbmiTest\Bootstrap;
 use PHPUnit\Framework\TestCase;
