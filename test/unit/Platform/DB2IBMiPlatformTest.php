@@ -72,7 +72,7 @@ class DB2IBMiPlatformTest extends TestCase
             ['VARCHAR(1024)', ['length' => 1024]],
             ['VARCHAR(255)', []],
             ['VARCHAR(255)', ['length' => 0]],
-            ['CHAR(1024)', ['fixed' => true, 'length' => 1024]],
+            ['CLOB(1M)', ['fixed' => true, 'length' => 1024]],
             ['CHAR(255)', ['fixed' => true]],
             ['CHAR(255)', ['fixed' => true, 'length' => 0]],
             ['CLOB(1M)', ['length' => 5000]],
