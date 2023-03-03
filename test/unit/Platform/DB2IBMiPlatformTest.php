@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
  */
 class DB2IBMiPlatformTest extends TestCase
 {
+    /**
+     * @return iterable<mixed, array<int, string>>
+     */
     public function typeMappingProvider()
     {
         return [
@@ -50,22 +53,28 @@ class DB2IBMiPlatformTest extends TestCase
     /**
      * @param string $dbType
      * @param string $expectedMapping
+     *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return void
+     *
      * @dataProvider typeMappingProvider
      */
     public function testTypeMappings($dbType, $expectedMapping)
     {
         if (!extension_loaded('ibm_db2')) {
-            $this->markTestSkipped('ibm_db2 extension not loaded');
+            self::markTestSkipped('ibm_db2 extension not loaded');
         }
         $em = Bootstrap::getEntityManager();
-        /** @var DB2IBMiPlatform $platform */
         $platform = $em->getConnection()->getDatabasePlatform();
 
         self::assertSame($expectedMapping, $platform->getDoctrineTypeMapping($dbType));
     }
 
+    /**
+     * @return iterable<mixed, array<int, string|array<string, int|bool>>>
+     */
     public function varcharTypeDeclarationProvider()
     {
         return [
@@ -82,16 +91,19 @@ class DB2IBMiPlatformTest extends TestCase
     /**
      * @param string $expectedSql
      * @param array $fieldDef
+     *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return void
+     *
      * @dataProvider varcharTypeDeclarationProvider
      */
     public function testVarcharTypeDeclarationSQLSnippet($expectedSql, array $fieldDef)
     {
         if (!extension_loaded('ibm_db2')) {
-            $this->markTestSkipped('ibm_db2 extension not loaded');
+            self::markTestSkipped('ibm_db2 extension not loaded');
         }
         $em = Bootstrap::getEntityManager();
-        /** @var DB2IBMiPlatform $platform */
         $platform = $em->getConnection()->getDatabasePlatform();
 
         self::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));

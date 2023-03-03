@@ -10,10 +10,13 @@ use PHPUnit\Framework\TestCase;
 
 final class OdbcIbmiConnectionTest extends TestCase
 {
+    /**
+     * @return void
+     */
     public function testCorrectConnectionClassIsUsed()
     {
         if (!extension_loaded('pdo')) {
-            $this->markTestSkipped('pdo extension not loaded');
+            self::markTestSkipped('pdo extension not loaded');
         }
         $em = Bootstrap::getEntityManager();
 

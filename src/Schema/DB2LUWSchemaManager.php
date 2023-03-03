@@ -10,7 +10,7 @@ class DB2LUWSchemaManager extends DB2SchemaManager
     {
         $columnDefinition = parent::_getPortableTableColumnDefinition($tableColumn);
 
-        if ($columnDefinition->getNotnull() === true && empty($columnDefinition->getDefault())) {
+        if ($columnDefinition->getNotnull() === true && null === $columnDefinition->getDefault()) {
             $columnDefinition->setDefault(null);
         }
 

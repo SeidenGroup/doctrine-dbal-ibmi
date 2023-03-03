@@ -4,7 +4,8 @@ namespace DoctrineDbalIbmiTest;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\ORMSetup;
+use PHPUnit\Framework\SkippedTestError;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -17,7 +18,8 @@ class Bootstrap
 
     /**
      * @return EntityManagerInterface
-     * @throws \PHPUnit_Framework_SkippedTestError
+     *
+     * @throws SkippedTestError
      * @throws \InvalidArgumentException
      * @throws \Doctrine\ORM\ORMException
      */
@@ -25,15 +27,15 @@ class Bootstrap
     {
         if (null === self::$entityManager) {
             if (!extension_loaded('ibm_db2') && !extension_loaded('pdo')) {
-                throw new \PHPUnit_Framework_SkippedTestError('Neither DB2 nor PDO connections are unavailable, skipping test');
+                throw new SkippedTestError('Neither DB2 nor PDO connections are available, skipping test');
             }
 
-            $configuration = Setup::createAnnotationMetadataConfiguration([
+            $configuration = ORMSetup::createAnnotationMetadataConfiguration([
                 __DIR__ . '/entity/',
             ], true);
 
             if (!file_exists(__DIR__ . '/config/local.php')) {
-                throw new \PHPUnit_Framework_SkippedTestError('test/config/local.php not found');
+                throw new SkippedTestError('test/config/local.php not found');
             }
 
             $connection = require __DIR__ . '/config/local.php';
@@ -42,6 +44,7 @@ class Bootstrap
         }
 
         self::$entityManager->clear();
+
         return self::$entityManager;
     }
 }

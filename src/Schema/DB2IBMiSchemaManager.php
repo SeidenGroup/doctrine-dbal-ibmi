@@ -25,9 +25,12 @@ class DB2IBMiSchemaManager extends DB2LUWSchemaManager
      */
     public function listSequences($database = null)
     {
-        if (is_null($database)) {
+        if (null === $database) {
             $database = $this->getDatabase();
         }
+
+        assert(null !== $database);
+
         $sql = $this->_platform->getListSequencesSQL($database);
 
         $sequences = $this->_conn->fetchAll($sql);
@@ -40,9 +43,11 @@ class DB2IBMiSchemaManager extends DB2LUWSchemaManager
      */
     public function listTableColumns($table, $database = null)
     {
-        if ( ! $database) {
+        if (null === $database) {
             $database = $this->getDatabase();
         }
+
+        assert(null !== $database);
 
         $sql = $this->_platform->getListTableColumnsSQL($table, $database);
 
@@ -69,6 +74,9 @@ class DB2IBMiSchemaManager extends DB2LUWSchemaManager
     public function listViews()
     {
         $database = $this->getDatabase();
+
+        assert(null !== $database);
+
         $sql = $this->_platform->getListViewsSQL($database);
         $views = $this->_conn->fetchAll($sql);
 
@@ -97,14 +105,14 @@ class DB2IBMiSchemaManager extends DB2LUWSchemaManager
         $tableColumn = array_change_key_case($tableColumn, \CASE_LOWER);
 
         $length = null;
-        $fixed = null;
+        $fixed = false;
         $unsigned = false;
         $scale = false;
         $precision = false;
 
         $default = null;
 
-        if (null !== $tableColumn['default'] && 'NULL' != $tableColumn['default']) {
+        if (null !== $tableColumn['default'] && 'NULL' !== $tableColumn['default']) {
             $default = trim($tableColumn['default'], "'");
         }
 
@@ -142,16 +150,15 @@ class DB2IBMiSchemaManager extends DB2LUWSchemaManager
                 break;
             case 'datetime':
                 break;
-            default:
         }
 
         $options = array(
             'length'        => $length,
-            'unsigned'      => (bool) $unsigned,
-            'fixed'         => (bool) $fixed,
+            'unsigned'      => $unsigned,
+            'fixed'         => $fixed,
             'default'       => $default,
-            'autoincrement' => (boolean) $tableColumn['autoincrement'],
-            'notnull'       => (bool) ($tableColumn['nulls'] == 'N'),
+            'autoincrement' => (bool) $tableColumn['autoincrement'],
+            'notnull'       => $tableColumn['nulls'] === 'N',
             'scale'         => null,
             'precision'     => null,
             'platformOptions' => array(),
@@ -167,15 +174,17 @@ class DB2IBMiSchemaManager extends DB2LUWSchemaManager
 
     /**
      * Returns database name
+     *
+     * @return string|null
      */
     protected function getDatabase()
     {
-        //In iSeries systems, with SQL naming, the default database name is specified in driverOptions['i5_lib']
+        // In iSeries systems, with SQL naming, the default database name is specified in driverOptions['i5_lib']
         $dbParams = $this->_conn->getParams();
         if (array_key_exists('driverOptions', $dbParams) && array_key_exists('i5_lib', $dbParams['driverOptions'])) {
             return $dbParams['driverOptions']['i5_lib'];
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

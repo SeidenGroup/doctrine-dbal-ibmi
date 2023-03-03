@@ -1,0 +1,38 @@
+name: "Quality assurance"
+
+on:
+    schedule:
+        - cron: "30 0 * * *"
+    push:
+        branches:
+            - master
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    phpstan:
+        name: PHPStan
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: "actions/checkout@v3"
+
+            - name: "Install PHP with extensions"
+              uses: "shivammathur/setup-php@v2"
+              with:
+                  php-version: "7.4"
+                  coverage: none
+                  tools: "composer:v2"
+
+            - name: "Install Composer dependencies (highest)"
+              uses: "ramsey/composer-install@v2"
+              with:
+                  dependency-versions: highest
+                  composer-options: "--prefer-dist --prefer-stable --ignore-platform-reqs"
+
+            - name: PHPStan
+              run: vendor/bin/phpstan --no-progress --memory-limit=1G analyse --error-format=github
