@@ -4,11 +4,12 @@ namespace DoctrineDbalIbmiTest\Platform;
 
 use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 use DoctrineDbalIbmiTest\Bootstrap;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \DoctrineDbalIbmi\Platform\DB2IBMiPlatform
  */
-class DB2IBMiPlatformTest extends \PHPUnit_Framework_TestCase
+class DB2IBMiPlatformTest extends TestCase
 {
     public function typeMappingProvider()
     {
