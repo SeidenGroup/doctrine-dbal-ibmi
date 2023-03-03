@@ -18,8 +18,13 @@
         "doctrine/dbal": "^2.6"
     },
     "require-dev": {
+        "ext-ibm_db2": "*",
+        "ext-pdo_odbc": "*",
         "doctrine/orm": "^2.5",
         "phpunit/phpunit": "^6.5 || ^9.6"
+    },
+    "suggest": {
+        "ext-pdo_odbc": "This is the recommended extension to connect with IBM DB2 for i"
     },
     "autoload": {
         "psr-4": {
