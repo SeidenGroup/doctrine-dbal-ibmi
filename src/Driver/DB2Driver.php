@@ -2,8 +2,6 @@
 
 namespace DoctrineDbalIbmi\Driver;
 
-use Doctrine\DBAL\Driver\IBMDB2\DB2Connection;
-
 class DB2Driver extends AbstractDB2Driver
 {
     /**
@@ -23,23 +21,14 @@ class DB2Driver extends AbstractDB2Driver
             $password = $params['password'] ?? null;
         }
 
-        // Check if the "dbname" parameter has an uncataloged database DSN.
-        if (isset($params['host']) && false === strpos($params['dbname'], '=')) {
-            $params['dbname'] = 'DRIVER={IBM DB2 ODBC DRIVER}' .
-                ';DATABASE=' . $params['dbname'] .
-                ';HOSTNAME=' . $params['host'] .
-                ';PROTOCOL=' . $params['protocol'] .
-                ';UID=' . $username .
-                ';PWD=' . $password . ';';
+        $params['user'] = $username;
+        $params['password'] = $password;
+        $params['driver'] = '{IBM DB2 ODBC DRIVER}';
+        $params['dbname'] = DataSourceName::fromConnectionParameters($params)->toString();
 
-            if (isset($params['port'])) {
-                $params['dbname'] .= 'PORT=' . $params['port'];
-            }
-
-            unset($params['user'], $params['password'], $params['host'], $params['port'], $params['protocol']);
-            $username = null;
-            $password = null;
-        }
+        unset($params['driver'], $params['user'], $params['password'], $params['host'], $params['port'], $params['protocol']);
+        $username = null;
+        $password = null;
 
         return new DB2IBMiConnection($params, $username, $password, $driverOptions);
     }
