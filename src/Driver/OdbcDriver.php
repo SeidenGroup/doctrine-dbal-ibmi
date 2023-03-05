@@ -44,7 +44,7 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
      */
     public function getName()
     {
-        return 'odbc';
+        return 'pdo_odbc_ibm_db2_i';
     }
 
     public function createDatabasePlatformForVersion($version)
