@@ -3,7 +3,7 @@ parameters:
     phpVersion: 80200
     paths:
         - src
-        - test
+        - tests
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false
     checkMissingIterableValueType: false

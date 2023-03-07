@@ -32,6 +32,11 @@
             "DoctrineDbalIbmi\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "DoctrineDbalIbmi\\Tests\\": "tests/"
+        }
+    },
     "config": {
         "sort-packages": true
     }

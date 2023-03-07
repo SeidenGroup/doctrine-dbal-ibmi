@@ -13,8 +13,8 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        $params['dsn'] = 'odbc:' . $params['dsn'];
-        $username = (!is_null($username)) ? $username : $params['username'];
+        $params['dsn'] = 'odbc:'.$params['dsn'];
+        $username = (!is_null($username)) ? $username : $params['user'];
         $password = (!is_null($password)) ? $password : $params['password'];
 
         return new OdbcIBMiConnection($params, $username, $password, $driverOptions);

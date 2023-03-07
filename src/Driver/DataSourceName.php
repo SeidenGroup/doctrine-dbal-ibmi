@@ -33,6 +33,10 @@ final class DataSourceName
      */
     public static function fromArray(array $params): self
     {
+        if (!isset($params['protocol']) || '' === $params['protocol']) {
+            $params['protocol'] = 'TCPIP';
+        }
+
         $chunks = [];
 
         foreach ($params as $key => $value) {

@@ -80,9 +80,6 @@ jobs:
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
 
-            - name: "Configure Doctrine DBAL"
-              run: "cp test/config/local-${{ matrix.extension }}.php.dist test/config/local.php"
-
             - name: "Run PHPUnit (${{ matrix.extension }})"
               if: "${{ matrix.extension == 'pdo_odbc' }}"
               run: "vendor/bin/phpunit --exclude-group ibm_db2 --coverage-clover=coverage.xml"
