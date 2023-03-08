@@ -1,6 +1,6 @@
 {
     "name": "alanseiden/doctrine-dbal-ibmi",
-    "description": "Doctrine DBAL module for DB2 on the IBM i platform",
+    "description": "Doctrine DBAL drivers for DB2 on the IBM i platform",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -14,15 +14,15 @@
         }
     ],
     "require": {
-        "php": "^7.0",
+        "php": "^7.0 || ^8.0",
         "doctrine/dbal": "^2.13.9"
     },
     "require-dev": {
         "ext-ibm_db2": "*",
         "ext-pdo_odbc": "*",
         "doctrine/orm": "^2.12",
-        "phpstan/phpstan": "^1.10",
-        "phpstan/phpstan-strict-rules": "^1.5",
+        "phpstan/phpstan": "^1.4.10",
+        "phpstan/phpstan-strict-rules": "^1.1",
         "phpunit/phpunit": "^6.5 || ^9.6"
     },
     "suggest": {

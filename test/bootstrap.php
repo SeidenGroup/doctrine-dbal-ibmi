@@ -26,8 +26,8 @@ class Bootstrap
     public static function getEntityManager()
     {
         if (null === self::$entityManager) {
-            if (!extension_loaded('ibm_db2') && !extension_loaded('pdo')) {
-                throw new SkippedTestError('Neither DB2 nor PDO connections are available, skipping test');
+            if (!extension_loaded('ibm_db2') && !extension_loaded('pdo_odbc')) {
+                throw new SkippedTestError('Neither ibm_db2 nor pdo_odbc extensions are available, skipping test');
             }
 
             $configuration = ORMSetup::createAnnotationMetadataConfiguration([
