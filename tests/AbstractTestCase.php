@@ -2,10 +2,9 @@
 
 namespace DoctrineDbalIbmi\Tests;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
-use Doctrine\ORM\ORMSetup;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception;
 use DoctrineDbalIbmi\Driver\DB2Driver;
 use DoctrineDbalIbmi\Driver\OdbcDriver;
 use PHPUnit\Framework\SkippedTestError;
@@ -19,43 +18,39 @@ abstract class AbstractTestCase extends TestCase
     ];
 
     /**
-     * @var array<key-of<self::EXTENSION_MAP>, EntityManagerInterface>
+     * @var array<key-of<self::EXTENSION_MAP>, Connection>
      */
-    private static $entityManagers = [];
+    private static $connections = [];
 
     /**
      * @param key-of<self::EXTENSION_MAP> $driver
      *
-     * @throws ORMException
+     * @throws Exception
      * @throws SkippedTestError
      */
-    final protected static function getEntityManager(string $driver): EntityManagerInterface
+    final protected static function getConnection(string $driver): Connection
     {
-        if (!isset(self::$entityManagers[$driver])) {
+        if (!isset(self::$connections[$driver])) {
             $extension = self::EXTENSION_MAP[$driver];
 
             if (!extension_loaded($extension)) {
                 throw new SkippedTestError(sprintf('The extension "%s" is not loaded, skipping test.', $extension));
             }
             
-            $connection = self::getConnection($driver);
+            $connectionParams = self::getConnectionParams($driver);
 
-            $configuration = ORMSetup::createAnnotationMetadataConfiguration([
-                __DIR__.'/fixtures/App/Entity/',
-            ], true);
+            $testConn = DriverManager::getConnection($connectionParams);
 
-            self::$entityManagers[$driver] = EntityManager::create($connection, $configuration);
+            self::$connections[$driver] = $testConn;
         }
 
-        self::$entityManagers[$driver]->clear();
-
-        return self::$entityManagers[$driver];
+        return self::$connections[$driver];
     }
 
     /**
      * @param key-of<self::EXTENSION_MAP> $driver
      */
-    private static function getConnection(string $driver): array
+    private static function getConnectionParams(string $driver): array
     {
         $connection = [
             'driverClass' => $driver,

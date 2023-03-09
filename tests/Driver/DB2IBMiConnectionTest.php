@@ -18,10 +18,10 @@ class DB2IBMiConnectionTest extends AbstractTestCase
      */
     public function testCorrectConnectionClassIsUsed()
     {
-        $em = self::getEntityManager(DB2Driver::class);
+        $connection = self::getConnection(DB2Driver::class);
 
-        $connection = $em->getConnection()->getWrappedConnection();
+        $wrappedConnection = $connection->getWrappedConnection();
 
-        self::assertInstanceOf(DB2IBMiConnection::class, $connection);
+        self::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
     }
 }

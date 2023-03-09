@@ -3,7 +3,6 @@
 namespace DoctrineDbalIbmi\Tests\Platform;
 
 use DoctrineDbalIbmi\Driver\DB2Driver;
-use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 use DoctrineDbalIbmi\Tests\AbstractTestCase;
 
 class DB2IBMiPlatformTest extends AbstractTestCase
@@ -46,9 +45,6 @@ class DB2IBMiPlatformTest extends AbstractTestCase
     }
 
     /**
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\ORM\ORMException
-     *
      * @return void
      *
      * @dataProvider typeMappingProvider
@@ -57,8 +53,8 @@ class DB2IBMiPlatformTest extends AbstractTestCase
      */
     public function testTypeMappings(string $dbType, string $expectedMapping)
     {
-        $em = self::getEntityManager(DB2Driver::class);
-        $platform = $em->getConnection()->getDatabasePlatform();
+        $connection = self::getConnection(DB2Driver::class);
+        $platform = $connection->getDatabasePlatform();
 
         self::assertSame($expectedMapping, $platform->getDoctrineTypeMapping($dbType));
     }
@@ -78,8 +74,6 @@ class DB2IBMiPlatformTest extends AbstractTestCase
     }
 
     /**
-     * @throws \Doctrine\ORM\ORMException
-     *
      * @return void
      *
      * @dataProvider varcharTypeDeclarationProvider
@@ -88,8 +82,8 @@ class DB2IBMiPlatformTest extends AbstractTestCase
      */
     public function testVarcharTypeDeclarationSQLSnippet(string $expectedSql, array $fieldDef)
     {
-        $em = self::getEntityManager(DB2Driver::class);
-        $platform = $em->getConnection()->getDatabasePlatform();
+        $connection = self::getConnection(DB2Driver::class);
+        $platform = $connection->getDatabasePlatform();
 
         self::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));
     }
