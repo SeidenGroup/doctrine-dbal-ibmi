@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ["7.1", "8.2"]
+                php-version: ["7.0", "8.2"]
                 # extension: ["pdo_odbc", "ibm_db2"]
                 # We can not test "IBM DB2 for i" currently.
                 extension: ["ibm_db2"]
@@ -58,7 +58,7 @@ jobs:
             - name: "Determine version for ibm_db2"
               id: ibm_db2_ver
               run: |
-                  if [[ "${{ matrix.php-version }}" == 7.1* ]] || [[ "${{ matrix.php-version }}" == 7.2* ]]; then
+                  if [[ "${{ matrix.php-version }}" == 7.0* ]] || "${{ matrix.php-version }}" == 7.1* ]] || [[ "${{ matrix.php-version }}" == 7.2* ]]; then
                       echo "ibm_db2_ver=2.1.3" >> "$GITHUB_OUTPUT"
                   else
                       echo "ibm_db2_ver=2.1.7" >> "$GITHUB_OUTPUT"
