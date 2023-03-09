@@ -18,10 +18,9 @@ final class OdbcIbmiConnectionTest extends TestCase
         if (!extension_loaded('pdo_odbc')) {
             self::markTestSkipped('pdo_odbc extension not loaded');
         }
-        $em = Bootstrap::getEntityManager();
+        $connection = Bootstrap::getConnection();
+        $wrappedConnection = $connection->getWrappedConnection();
 
-        $connection = $em->getConnection()->getWrappedConnection();
-
-        self::assertInstanceOf(OdbcIBMiConnection::class, $connection);
+        self::assertInstanceOf(OdbcIBMiConnection::class, $wrappedConnection);
     }
 }

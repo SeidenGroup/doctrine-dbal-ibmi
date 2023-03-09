@@ -19,10 +19,9 @@ class DB2IBMiConnectionTest extends TestCase
         if (!extension_loaded('ibm_db2')) {
             self::markTestSkipped('ibm_db2 extension not loaded');
         }
-        $em = Bootstrap::getEntityManager();
+        $connection = Bootstrap::getConnection();
+        $wrappedConnection = $connection->getWrappedConnection();
 
-        $connection = $em->getConnection()->getWrappedConnection();
-
-        self::assertInstanceOf(DB2IBMiConnection::class, $connection);
+        self::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
     }
 }

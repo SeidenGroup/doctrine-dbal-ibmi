@@ -20,7 +20,6 @@
     "require-dev": {
         "ext-ibm_db2": "*",
         "ext-pdo_odbc": "*",
-        "doctrine/orm": "^2.12",
         "phpstan/phpstan": "^1.4.10",
         "phpstan/phpstan-strict-rules": "^1.1",
         "phpunit/phpunit": "^6.5 || ^9.6"

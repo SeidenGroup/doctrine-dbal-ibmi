@@ -2,9 +2,9 @@
 
 namespace DoctrineDbalIbmiTest;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMSetup;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception;
 use PHPUnit\Framework\SkippedTestError;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -12,39 +12,30 @@ require __DIR__ . '/../vendor/autoload.php';
 class Bootstrap
 {
     /**
-     * @var EntityManagerInterface
+     * @var Connection
      */
-    private static $entityManager;
+    private static $connection;
 
     /**
-     * @return EntityManagerInterface
-     *
+     * @throws Exception
      * @throws SkippedTestError
-     * @throws \InvalidArgumentException
-     * @throws \Doctrine\ORM\ORMException
      */
-    public static function getEntityManager()
+    public static function getConnection(): Connection
     {
-        if (null === self::$entityManager) {
+        if (null === self::$connection) {
             if (!extension_loaded('ibm_db2') && !extension_loaded('pdo_odbc')) {
                 throw new SkippedTestError('Neither ibm_db2 nor pdo_odbc extensions are available, skipping test');
             }
-
-            $configuration = ORMSetup::createAnnotationMetadataConfiguration([
-                __DIR__ . '/entity/',
-            ], true);
 
             if (!file_exists(__DIR__ . '/config/local.php')) {
                 throw new SkippedTestError('test/config/local.php not found');
             }
 
-            $connection = require __DIR__ . '/config/local.php';
+            $connectionParams = require __DIR__.'/config/local.php';
 
-            self::$entityManager = EntityManager::create($connection, $configuration);
+            self::$connection = DriverManager::getConnection($connectionParams);
         }
 
-        self::$entityManager->clear();
-
-        return self::$entityManager;
+        return self::$connection;
     }
 }
