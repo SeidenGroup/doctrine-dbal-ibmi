@@ -1,13 +1,26 @@
 <?xml version="1.0"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="test/bootstrap.php" colors="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" colors="true" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" failOnRisky="true" failOnWarning="true">
+    <php>
+        <ini name="error_reporting" value="-1" />
+
+        <env name="db_host" value="127.0.0.1"/>
+        <env name="db_port" value="50000"/>
+        <env name="db_user" value="db2inst1"/>
+        <env name="db_password" value="Doctrine2018"/>
+        <env name="db_name" value="doctrine"/>
+        <!-- DSN for "IBM i Access ODBC Driver" -->
+        <env name="db_dsn" value="DRIVER={IBM i Access ODBC Driver};SYSTEM=127.0.0.1;DATABASE=doctrine;"/>
+    </php>
+
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">src</directory>
         </include>
     </coverage>
+
     <testsuites>
         <testsuite name="UnitTest">
-            <directory>./test/unit</directory>
+            <directory suffix="Test.php">./tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

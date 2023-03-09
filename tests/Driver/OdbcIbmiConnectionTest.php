@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace DoctrineDbalIbmiTest\Driver;
+namespace DoctrineDbalIbmi\Tests\Driver;
 
+use DoctrineDbalIbmi\Driver\OdbcDriver;
 use DoctrineDbalIbmi\Driver\OdbcIBMiConnection;
-use DoctrineDbalIbmiTest\Bootstrap;
-use PHPUnit\Framework\TestCase;
+use DoctrineDbalIbmi\Tests\AbstractTestCase;
 
-final class OdbcIbmiConnectionTest extends TestCase
+/**
+ * @requires pdo_odbc
+ */
+final class OdbcIbmiConnectionTest extends AbstractTestCase
 {
     /**
      * @return void
      */
     public function testCorrectConnectionClassIsUsed()
     {
-        if (!extension_loaded('pdo_odbc')) {
-            self::markTestSkipped('pdo_odbc extension not loaded');
-        }
-        $connection = Bootstrap::getConnection();
+        $connection = self::getConnection(OdbcDriver::class);
         $wrappedConnection = $connection->getWrappedConnection();
 
         self::assertInstanceOf(OdbcIBMiConnection::class, $wrappedConnection);
