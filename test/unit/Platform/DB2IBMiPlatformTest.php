@@ -2,7 +2,6 @@
 
 namespace DoctrineDbalIbmiTest\Platform;
 
-use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 use DoctrineDbalIbmiTest\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
@@ -54,9 +53,6 @@ class DB2IBMiPlatformTest extends TestCase
      * @param string $dbType
      * @param string $expectedMapping
      *
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\ORM\ORMException
-     *
      * @return void
      *
      * @dataProvider typeMappingProvider
@@ -66,8 +62,8 @@ class DB2IBMiPlatformTest extends TestCase
         if (!extension_loaded('ibm_db2')) {
             self::markTestSkipped('ibm_db2 extension not loaded');
         }
-        $em = Bootstrap::getEntityManager();
-        $platform = $em->getConnection()->getDatabasePlatform();
+        $connection = Bootstrap::getConnection();
+        $platform = $connection->getDatabasePlatform();
 
         self::assertSame($expectedMapping, $platform->getDoctrineTypeMapping($dbType));
     }
@@ -92,8 +88,6 @@ class DB2IBMiPlatformTest extends TestCase
      * @param string $expectedSql
      * @param array $fieldDef
      *
-     * @throws \Doctrine\ORM\ORMException
-     *
      * @return void
      *
      * @dataProvider varcharTypeDeclarationProvider
@@ -103,8 +97,8 @@ class DB2IBMiPlatformTest extends TestCase
         if (!extension_loaded('ibm_db2')) {
             self::markTestSkipped('ibm_db2 extension not loaded');
         }
-        $em = Bootstrap::getEntityManager();
-        $platform = $em->getConnection()->getDatabasePlatform();
+        $connection = Bootstrap::getConnection();
+        $platform = $connection->getDatabasePlatform();
 
         self::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));
     }
