@@ -14,22 +14,26 @@
         }
     ],
     "require": {
-        "php": "^7.0 || ^8.0",
+        "php": "^7.1 || ^8.0",
         "doctrine/dbal": "^2.13.9"
     },
     "require-dev": {
-        "ext-ibm_db2": "*",
-        "ext-pdo_odbc": "*",
         "phpstan/phpstan": "^1.4.10",
         "phpstan/phpstan-strict-rules": "^1.1",
         "phpunit/phpunit": "^6.5 || ^9.6"
     },
     "suggest": {
+        "ext-ibm_db2": "Extension to use the DB2Driver driver",
         "ext-pdo_odbc": "This is the recommended extension to connect with IBM DB2 for i"
     },
     "autoload": {
         "psr-4": {
             "DoctrineDbalIbmi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DoctrineDbalIbmi\\Tests\\": "tests/"
         }
     },
     "config": {
