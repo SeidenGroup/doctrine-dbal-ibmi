@@ -3,6 +3,7 @@
 namespace DoctrineDbalIbmi\Platform;
 
 use Doctrine\DBAL\Platforms\DB2Platform;
+use Doctrine\DBAL\Types\Types;
 
 class DB2IBMiPlatform extends DB2Platform
 {
@@ -28,38 +29,38 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function initializeDoctrineTypeMappings()
     {
-        $this->doctrineTypeMapping = array(
-            'smallint'      => 'smallint',
-            'bigint'        => 'bigint',
-            'integer'       => 'integer',
-            'rowid'         => 'integer',
-            'time'          => 'time',
-            'date'          => 'date',
-            'varchar'       => 'string',
-            'character'     => 'string',
-            'char'          => 'string',
-            'nvarchar'          => 'string',
-            'nchar'          => 'string',
-            'char () for bit data' => 'string',
-            'varchar () for bit data' => 'string',
-            'varg'          => 'string',
-            'vargraphic'          => 'string',
-            'graphic'       => 'string',
-            'varbinary'     => 'binary',
-            'binary'        => 'binary',
-            'varbin'        => 'binary',
-            'clob'          => 'text',
-            'nclob'          => 'text',
-            'dbclob'        => 'text',
-            'blob'          => 'blob',
-            'decimal'       => 'decimal',
-            'numeric'       => 'float',
-            'double'        => 'float',
-            'real'          => 'float',
-            'float'         => 'float',
-            'timestamp'     => 'datetime',
-            'timestmp'      => 'datetime',
-        );
+        $this->doctrineTypeMapping = [
+            'smallint'      => Types::SMALLINT,
+            'bigint'        => Types::BIGINT,
+            'integer'       => Types::INTEGER,
+            'rowid'         => Types::INTEGER,
+            'time'          => Types::TIME_MUTABLE,
+            'date'          => Types::DATE_MUTABLE,
+            'varchar'       => Types::STRING,
+            'character'     => Types::STRING,
+            'char'          => Types::STRING,
+            'nvarchar'      => Types::STRING,
+            'nchar'         => Types::STRING,
+            'char () for bit data' => Types::STRING,
+            'varchar () for bit data' => Types::STRING,
+            'varg'          => Types::STRING,
+            'vargraphic'    => Types::STRING,
+            'graphic'       => Types::STRING,
+            'varbinary'     => Types::BINARY,
+            'binary'        => Types::BINARY,
+            'varbin'        => Types::BINARY,
+            'clob'          => Types::TEXT,
+            'nclob'         => Types::TEXT,
+            'dbclob'        => Types::TEXT,
+            'blob'          => Types::BLOB,
+            'decimal'       => Types::DECIMAL,
+            'numeric'       => Types::FLOAT,
+            'double'        => Types::FLOAT,
+            'real'          => Types::FLOAT,
+            'float'         => Types::FLOAT,
+            'timestamp'     => Types::DATETIME_MUTABLE,
+            'timestmp'      => Types::DATETIME_MUTABLE,
+        ];
     }
 
     /**

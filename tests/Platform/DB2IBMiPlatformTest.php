@@ -2,46 +2,49 @@
 
 namespace DoctrineDbalIbmi\Tests\Platform;
 
+use Doctrine\DBAL\Types\Types;
 use DoctrineDbalIbmi\Driver\DB2Driver;
 use DoctrineDbalIbmi\Tests\AbstractTestCase;
 
 final class DB2IBMiPlatformTest extends AbstractTestCase
 {
     /**
-     * @return iterable<mixed, array<int, string>>
+     * @return iterable<int|string, array<int, string>>
+     *
+     * @phpstan-return iterable<int|string, array{0: string, 1: Types::*}>
      */
     public function typeMappingProvider(): iterable
     {
-        yield ['smallint', 'smallint'];
-        yield ['bigint', 'bigint'];
-        yield ['integer', 'integer'];
-        yield ['rowid', 'integer'];
-        yield ['time', 'time'];
-        yield ['date', 'date'];
-        yield ['varchar', 'string'];
-        yield ['character', 'string'];
-        yield ['char', 'string'];
-        yield ['nvarchar', 'string'];
-        yield ['nchar', 'string'];
-        yield ['char () for bit data', 'string'];
-        yield ['varchar () for bit data', 'string'];
-        yield ['varg', 'string'];
-        yield ['vargraphic', 'string'];
-        yield ['graphic', 'string'];
-        yield ['varbinary', 'binary'];
-        yield ['binary', 'binary'];
-        yield ['varbin', 'binary'];
-        yield ['clob', 'text'];
-        yield ['nclob', 'text'];
-        yield ['dbclob', 'text'];
-        yield ['blob', 'blob'];
-        yield ['decimal', 'decimal'];
-        yield ['numeric', 'float'];
-        yield ['double', 'float'];
-        yield ['real', 'float'];
-        yield ['float', 'float'];
-        yield ['timestamp', 'datetime'];
-        yield ['timestmp', 'datetime'];
+        yield ['smallint', Types::SMALLINT];
+        yield ['bigint', Types::BIGINT];
+        yield ['integer', Types::INTEGER];
+        yield ['rowid', Types::INTEGER];
+        yield ['time', Types::TIME_MUTABLE];
+        yield ['date', Types::DATE_MUTABLE];
+        yield ['varchar', Types::STRING];
+        yield ['character', Types::STRING];
+        yield ['char', Types::STRING];
+        yield ['nvarchar', Types::STRING];
+        yield ['nchar', Types::STRING];
+        yield ['char () for bit data', Types::STRING];
+        yield ['varchar () for bit data', Types::STRING];
+        yield ['varg', Types::STRING];
+        yield ['vargraphic', Types::STRING];
+        yield ['graphic', Types::STRING];
+        yield ['varbinary', Types::BINARY];
+        yield ['binary', Types::BINARY];
+        yield ['varbin', Types::BINARY];
+        yield ['clob', Types::TEXT];
+        yield ['nclob', Types::TEXT];
+        yield ['dbclob', Types::TEXT];
+        yield ['blob', Types::BLOB];
+        yield ['decimal', Types::DECIMAL];
+        yield ['numeric', Types::FLOAT];
+        yield ['double', Types::FLOAT];
+        yield ['real', Types::FLOAT];
+        yield ['float', Types::FLOAT];
+        yield ['timestamp', Types::DATETIME_MUTABLE];
+        yield ['timestmp', Types::DATETIME_MUTABLE];
     }
 
     /**
@@ -60,7 +63,7 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
     }
 
     /**
-     * @return iterable<mixed, array<int, string|array<string, int|bool>>>
+     * @return iterable<int|string, array<int, string|array<string, int|bool>>>
      */
     public function varcharTypeDeclarationProvider(): iterable
     {
