@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+    - name: Doctrine DBAL on StackOverflow
+      url: https://stackoverflow.com/questions/tagged/doctrine-dbal
+      about: 'Questions tagged with "doctrine-dbal" on StackOverflow'
+    - name: IBM DB2 on StackOverflow
+      url: https://stackoverflow.com/questions/tagged/db2
+      about: 'Questions tagged with "db2" on StackOverflow'
+    - name: PDO ODBC StackOverflow
+      url: https://stackoverflow.com/questions/tagged/pdo-odbc
+      about: 'Questions tagged with "pdo-odbc" on StackOverflow'
