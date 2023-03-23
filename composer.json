@@ -21,7 +21,8 @@
         "friendsofphp/php-cs-fixer": "^3.3",
         "phpstan/phpstan": "^1.4.10",
         "phpstan/phpstan-strict-rules": "^1.1",
-        "phpunit/phpunit": "^6.5 || ^9.6"
+        "phpunit/phpunit": "^6.5 || ^9.6",
+        "rector/rector": "^0.12.19"
     },
     "suggest": {
         "ext-ibm_db2": "Extension to use the DB2Driver driver",

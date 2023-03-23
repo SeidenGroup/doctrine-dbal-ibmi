@@ -9,6 +9,7 @@
 
 namespace DoctrineDbalIbmi\Platform;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Types\Types;
@@ -250,7 +251,7 @@ class DB2IBMiPlatform extends DB2Platform
     /**
      * @return string
      *
-     * @throws \Doctrine\DBAL\DBALException if not supported on this platform
+     * @throws DBALException if not supported on this platform
      */
     public function getListDatabasesSQL()
     {
