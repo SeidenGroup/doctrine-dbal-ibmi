@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the doctrine-dbal-ibmi package.
+ * Copyright (c) 2016 Alan Seiden Consulting LLC, James Titcumb
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DoctrineDbalIbmi\Tests\Platform;
 
 use Doctrine\DBAL\Exception;
@@ -60,7 +67,7 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         $connection = self::getConnection(DB2Driver::class);
         $platform = $connection->getDatabasePlatform();
 
-        self::assertSame($expectedMapping, $platform->getDoctrineTypeMapping($dbType));
+        static::assertSame($expectedMapping, $platform->getDoctrineTypeMapping($dbType));
     }
 
     /**
@@ -89,7 +96,7 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         $connection = self::getConnection(DB2Driver::class);
         $platform = $connection->getDatabasePlatform();
 
-        self::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));
+        static::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));
     }
 
     /**
@@ -201,7 +208,7 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         $connection = self::getConnection(DB2Driver::class);
         $platform = $connection->getDatabasePlatform();
 
-        self::assertSame($expected, $platform->modifyLimitQuery($sql, $limit, $offset));
+        static::assertSame($expected, $platform->modifyLimitQuery($sql, $limit, $offset));
     }
 
     /**

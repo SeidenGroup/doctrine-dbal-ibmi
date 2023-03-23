@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the doctrine-dbal-ibmi package.
+ * Copyright (c) 2016 Alan Seiden Consulting LLC, James Titcumb
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DoctrineDbalIbmi\Driver;
 
 class DB2Driver extends AbstractDB2Driver
@@ -7,7 +14,7 @@ class DB2Driver extends AbstractDB2Driver
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
+    public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
     {
         if ('' === ($params['protocol'] ?? '')) {
             $params['protocol'] = 'TCPIP';
