@@ -90,4 +90,114 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
 
         self::assertSame($expectedSql, $platform->getVarcharTypeDeclarationSQL($fieldDef));
     }
+
+    /**
+     * @return iterable<int|string, array<int, int|string|null>>
+     *
+     * @phpstan-return iterable<int|string, array{0: string, 1: string, 2: ?int, 3: ?int}>
+     */
+    public function limitQueryProvider(): iterable
+    {
+        yield [
+            'SELECT DOCTRINE_TBL.*'
+            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
+            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
+            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 3 AND 7',
+            'SELECT * FROM mytable',
+            5,
+            2,
+        ];
+
+        yield [
+            'SELECT DOCTRINE_TBL.*'
+            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
+            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
+            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 2 AND 2',
+            'SELECT * FROM mytable',
+            1,
+            1,
+        ];
+
+        yield [
+            'SELECT DOCTRINE_TBL.*'
+            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
+            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
+            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 3 AND 3',
+            'SELECT * FROM mytable',
+            1,
+            2,
+        ];
+
+        yield [
+            'SELECT * FROM mytable FETCH FIRST 0 ROWS ONLY',
+            'SELECT * FROM mytable',
+            0,
+            null,
+        ];
+
+        yield [
+            'SELECT * FROM mytable FETCH FIRST 1 ROWS ONLY',
+            'SELECT * FROM mytable',
+            1,
+            0,
+        ];
+
+        yield [
+            'SELECT * FROM mytable FETCH FIRST 1 ROWS ONLY',
+            'SELECT * FROM mytable',
+            1,
+            null,
+        ];
+
+        yield [
+            'SELECT DOCTRINE_TBL.*'
+            .' FROM (SELECT DOCTRINE_TBL1.*, ROW_NUMBER() OVER() AS DOCTRINE_ROWNUM'
+            .' FROM (SELECT * FROM mytable) DOCTRINE_TBL1) DOCTRINE_TBL'
+            .' WHERE DOCTRINE_TBL.DOCTRINE_ROWNUM BETWEEN 2 AND 1',
+            'SELECT * FROM mytable',
+            null,
+            1,
+        ];
+
+        yield [
+            'SELECT * FROM mytable',
+            'SELECT * FROM mytable',
+            null,
+            null,
+        ];
+
+        yield [
+            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 1 ROWS ONLY',
+            'SELECT * FROM mytable ORDER BY created_at',
+            1,
+            0,
+        ];
+
+        yield [
+            'SELECT * FROM mytable ORDER BY created_at',
+            'SELECT * FROM mytable ORDER BY created_at',
+            null,
+            0,
+        ];
+
+        yield [
+            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 0 ROWS ONLY',
+            'SELECT * FROM mytable ORDER BY created_at',
+            0,
+            null,
+        ];
+    }
+
+    /**
+     * @return void
+     *
+     * @dataProvider limitQueryProvider
+     */
+    public function testLimitQuery(string $expected, string $sql, ?int $limit = null, ?int $offset = null)
+    {
+        $connection = self::getConnection(DB2Driver::class);
+        $platform = $connection->getDatabasePlatform();
+
+        self::assertSame($expected, $platform->modifyLimitQuery($sql, $limit, $offset));
+    }
 }

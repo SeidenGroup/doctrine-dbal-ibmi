@@ -290,7 +290,7 @@ class DB2IBMiPlatform extends DB2Platform
 
         $orderBy = stristr($query, 'ORDER BY');
 
-        assert(false !== $orderBy);
+        $orderBy = false === $orderBy ? '' : $orderBy;
 
         $orderByBlocks = preg_split('/\s*ORDER\s+BY/', $orderBy);
 
