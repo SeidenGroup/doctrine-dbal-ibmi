@@ -23,4 +23,27 @@ final class OdbcIbmiConnectionTest extends AbstractTestCase
 
         self::assertInstanceOf(OdbcIBMiConnection::class, $wrappedConnection);
     }
+
+    /**
+     * @return void
+     */
+    public function testSelect()
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+        $sql = 'SELECT TABLE_NAME, TABLE_OWNER'
+            .' FROM QSYS2.SYSTABLES'
+            .' WHERE TABLE_OWNER = \'ALAN\''
+            .' ORDER BY TABLE_NAME DESC'
+            .' LIMIT 10';
+
+        $result = $connection
+            ->executeQuery($sql)
+            ->fetchAllAssociative();
+
+        self::assertCount(10, $result);
+        self::assertCount(2, $result[0]);
+        self::assertArrayHasKey('TABLE_NAME', $result[0]);
+        self::assertArrayHasKey('TABLE_OWNER', $result[0]);
+        self::assertSame('WEATHER_RAW', $result[0]['TABLE_NAME']); // ASC: "@TP025"
+    }
 }
