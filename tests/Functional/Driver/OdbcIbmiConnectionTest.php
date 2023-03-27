@@ -75,18 +75,18 @@ final class OdbcIbmiConnectionTest extends AbstractTestCase
     {
         $connection = self::getConnection(OdbcDriver::class);
 
-        $sql = $connection->getDatabasePlatform()->getListTableIndexesSQL('SYSTABLES', 'QSYS2');
+        $sql = $connection->getDatabasePlatform()->getListTableIndexesSQL('WEATHER_RAW', 'WEATHER');
 
         $result = $connection
             ->executeQuery($sql)
             ->fetchAllAssociative();
 
-        // self::assertCount(32, $result);
+        self::assertCount(2, $result);
         self::assertCount(4, $result[0]);
         self::assertArrayHasKey('KEY_NAME', $result[0]);
         self::assertArrayHasKey('COLUMN_NAME', $result[0]);
-
-        var_dump($result);
+        self::assertArrayHasKey('PRIMARY', $result[0]);
+        self::assertArrayHasKey('NON_UNIQUE', $result[0]);
     }
 
     /**
@@ -96,17 +96,19 @@ final class OdbcIbmiConnectionTest extends AbstractTestCase
     {
         $connection = self::getConnection(OdbcDriver::class);
 
-        $sql = $connection->getDatabasePlatform()->getListTableForeignKeysSQL('SYSTABLES');
+        $sql = $connection->getDatabasePlatform()->getListTableForeignKeysSQL('ORDERS', 'QWQCENT');
 
         $result = $connection
             ->executeQuery($sql)
             ->fetchAllAssociative();
 
-        // self::assertCount(32, $result);
+        self::assertCount(3, $result);
         self::assertCount(6, $result[0]);
         self::assertArrayHasKey('LOCAL_COLUMN', $result[0]);
         self::assertArrayHasKey('FOREIGN_TABLE', $result[0]);
-
-        var_dump($result);
+        self::assertArrayHasKey('FOREIGN_COLUMN', $result[0]);
+        self::assertArrayHasKey('INDEX_NAME', $result[0]);
+        self::assertArrayHasKey('ON_UPDATE', $result[0]);
+        self::assertArrayHasKey('ON_DELETE', $result[0]);
     }
 }
