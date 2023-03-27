@@ -46,4 +46,24 @@ final class OdbcIbmiConnectionTest extends AbstractTestCase
         self::assertArrayHasKey('TABLE_OWNER', $result[0]);
         self::assertSame('WEATHER_RAW', $result[0]['TABLE_NAME']); // ASC: "@TP025"
     }
+
+    /**
+     * @return void
+     */
+    public function testPlaformMethods()
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+
+        $sql = $connection->getDatabasePlatform()->getListTableColumnsSQL('SYSTABLES', 'QSYS2');
+
+        $result = $connection
+            ->executeQuery($sql)
+            ->fetchAllAssociative();
+
+        self::assertCount(13, $result[0]);
+        self::assertArrayHasKey('tabschema', $result[0]);
+        self::assertArrayHasKey('tabname', $result[0]);
+
+        var_dump($result);
+    }
 }
