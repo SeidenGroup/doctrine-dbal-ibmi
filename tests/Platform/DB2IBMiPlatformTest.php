@@ -4,6 +4,7 @@ namespace DoctrineDbalIbmi\Tests\Platform;
 
 use Doctrine\DBAL\Types\Types;
 use DoctrineDbalIbmi\Driver\DB2Driver;
+use DoctrineDbalIbmi\Driver\OdbcDriver;
 use DoctrineDbalIbmi\Tests\AbstractTestCase;
 
 final class DB2IBMiPlatformTest extends AbstractTestCase
@@ -199,5 +200,29 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         $platform = $connection->getDatabasePlatform();
 
         self::assertSame($expected, $platform->modifyLimitQuery($sql, $limit, $offset));
+    }
+
+    /**
+     * @return iterable<int|string, array<int, string|null>>
+     *
+     * @phpstan-return iterable<int|string, array{0: string, 1: ?string}>
+     */
+    public function getListViewsSQLProvider(): iterable
+    {
+        yield ['SELECT DISTINCT NAME, TEXT FROM QSYS2.sysviews v WHERE v.TABLE_SCHEMA = UPPER(\'MY_DB\') ORDER BY NAME', 'MY_DB'];
+        yield ['SELECT DISTINCT NAME, TEXT FROM QSYS2.sysviews v ORDER BY NAME', null];
+    }
+
+    /**
+     * @return void
+     *
+     * @dataProvider getListViewsSQLProvider
+     */
+    public function testGetListViewsSQL(string $expected, ?string $database = null)
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+        $platform = $connection->getDatabasePlatform();
+
+        self::assertSame($expected, $platform->getListViewsSQL($database));
     }
 }

@@ -180,15 +180,15 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getListViewsSQL($database = null)
     {
-        return "
-            SELECT
-              DISTINCT NAME,
-              TEXT
-            FROM QSYS2.sysviews v
-            WHERE 1=1
-            ". ($database !== null ? "AND v.TABLE_SCHEMA = UPPER('" . $database . "')" : '') ."
-            ORDER BY NAME
-        ";
+        $sql = 'SELECT DISTINCT NAME, TEXT FROM QSYS2.sysviews v';
+
+        if (null !== $database) {
+            $sql .= ' WHERE v.TABLE_SCHEMA = UPPER(\'' . $database . '\')';
+        }
+
+        $sql .= ' ORDER BY NAME';
+
+        return $sql;
     }
 
     /**
