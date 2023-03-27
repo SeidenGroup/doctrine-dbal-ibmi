@@ -1,6 +1,6 @@
 <?php
 
-namespace DoctrineDbalIbmi\Tests\Driver;
+namespace DoctrineDbalIbmi\Tests\Functional\Driver;
 
 use Doctrine\DBAL\DriverManager;
 use DoctrineDbalIbmi\Driver\DB2Driver;
