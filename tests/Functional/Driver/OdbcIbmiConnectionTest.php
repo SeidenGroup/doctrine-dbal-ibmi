@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DoctrineDbalIbmi\Tests\Driver;
+namespace DoctrineDbalIbmi\Tests\Functional\Driver;
 
 use DoctrineDbalIbmi\Driver\OdbcDriver;
 use DoctrineDbalIbmi\Driver\OdbcIBMiConnection;
