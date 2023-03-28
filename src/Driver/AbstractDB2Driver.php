@@ -25,7 +25,8 @@ abstract class AbstractDB2Driver implements Driver
      */
     public function getDatabase(Connection $conn)
     {
-        $params = $conn->getParams();
+        $params = DataSourceName::fromConnectionParameters($conn->getParams())
+            ->getConnectionParameters();
 
         assert(is_string($params['dbname']));
 

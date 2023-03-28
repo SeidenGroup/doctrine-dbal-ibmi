@@ -2,6 +2,7 @@
 
 namespace DoctrineDbalIbmi\Driver;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\VersionAwarePlatformDriver;
 use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 use DoctrineDbalIbmi\Schema\DB2IBMiSchemaManager;
@@ -13,8 +14,6 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
-        $params['dsn'] = 'odbc:' . $params['dsn'];
-
         // @todo: Remove the following conditional block in the next major version.
         if (isset($params['username'])) {
             @trigger_error(sprintf(
@@ -27,8 +26,17 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
             unset($params['username']);
         }
 
-        $username = (!is_null($username)) ? $username : $params['user'];
-        $password = (!is_null($password)) ? $password : $params['password'];
+        assert(is_scalar($params['user']));
+        assert(is_scalar($params['password']));
+        $username = (string) ($username ?? $params['user'] ?? '');
+        $password = (string) ($password ?? $params['password'] ?? '');
+
+        unset($params['user'], $params['password']);
+
+        $params['driver'] = '{IBM i Access ODBC Driver}';
+        $params['dsn'] = 'odbc:' . DataSourceName::fromConnectionParameters($params)->toString();
+
+        unset($params['driver'], $params['host'], $params['port'], $params['protocol']);
 
         return new OdbcIBMiConnection($params, $username, $password, $driverOptions);
     }
@@ -49,18 +57,6 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
     /**
      * {@inheritdoc}
      */
-    public function getDatabase(\Doctrine\DBAL\Connection $conn)
-    {
-        $params = $conn->getParams();
-
-        assert(is_string($params['dbname']));
-
-        return $params['dbname'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getDatabasePlatform()
     {
         return new DB2IBMiPlatform();
@@ -69,7 +65,7 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
     /**
      * {@inheritdoc}
      */
-    public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
+    public function getSchemaManager(Connection $conn)
     {
         return new DB2IBMiSchemaManager($conn);
     }
