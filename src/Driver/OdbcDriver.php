@@ -14,6 +14,19 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
         $params['dsn'] = 'odbc:' . $params['dsn'];
+
+        // @todo: Remove the following conditional block in the next major version.
+        if (isset($params['username'])) {
+            @trigger_error(sprintf(
+                'Passing parameter "username" to "%s()" is deprecated since alanseiden/doctrine-dbal-ibmi 0.1 and its support'
+                . ' will be removed in version 0.2. Use "user" parameter instead.',
+                __METHOD__
+            ), E_USER_DEPRECATED);
+
+            $params['user'] = $params['username'];
+            unset($params['username']);
+        }
+
         $username = (!is_null($username)) ? $username : $params['user'];
         $password = (!is_null($password)) ? $password : $params['password'];
 
