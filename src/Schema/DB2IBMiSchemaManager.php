@@ -12,7 +12,11 @@ namespace DoctrineDbalIbmi\Schema;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\DB2SchemaManager;
 use Doctrine\DBAL\Types\Type;
+use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 
+/**
+ * @property DB2IBMiPlatform $_platform
+ */
 class DB2IBMiSchemaManager extends DB2SchemaManager
 {
     /**
@@ -22,10 +26,11 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
     {
         $sql = $this->_platform->getListTablesSQL($this->_conn->getDatabase());
 
-        $tables = $this->_conn->fetchAll($sql);
-        $tableNames = $this->_getPortableTablesList($tables);
+        $tables = $this->_conn->fetchAllAssociative($sql);
+        /** @var string[] $tableNames */
+        $tableNames = $this->filterAssetNames($this->_getPortableTablesList($tables));
 
-        return $this->filterAssetNames($tableNames);
+        return $tableNames;
     }
 
     /**
@@ -43,7 +48,7 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
 
         $default = null;
 
-        if (null !== $tableColumn['default'] && 'NULL' !== $tableColumn['default']) {
+        if ('NULL' !== $tableColumn['default'] && is_string($tableColumn['default'])) {
             $default = trim($tableColumn['default'], "'");
         }
 
