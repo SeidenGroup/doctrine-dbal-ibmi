@@ -11,6 +11,11 @@ use PHPUnit\Framework\TestCase;
 
 final class DataSourceNameTest extends TestCase
 {
+    /**
+     * @return iterable<int|string, array<int, string|array<string, string|int|bool>>>
+     *
+     * @phpstan-return iterable<int|string, array{0: string, 1: array<string, string|int|bool>}>
+     */
     public function fromConnectionParametersProvider(): iterable
     {
         yield [
@@ -90,5 +95,66 @@ final class DataSourceNameTest extends TestCase
     public function testFromConnectionParameters(string $expected, array $params)
     {
         self::assertSame($expected, DataSourceName::fromConnectionParameters($params)->toString());
+    }
+
+    /**
+     * @return iterable<int|string, array<int, array<string, string|int|bool>>>
+     *
+     * @phpstan-return iterable<int|string, array{0: array<string, string>, 1: array<string, string|int|bool>}>
+     */
+    public function getConnectionParametersProvider(): iterable
+    {
+        yield [
+            [
+                'DRIVER' => '{IBM i Access ODBC Driver}',
+                'SYSTEM' => 'local_host',
+                'DATABASE' => 'MY_DB',
+                'UID' => 'me',
+                'PWD' => '53cr37',
+            ],
+            [
+                'driverClass' => OdbcDriver::class,
+                'persistent' => false,
+                'driver' => '{IBM i Access ODBC Driver}',
+                'dbname' => 'MY_DB',
+                'host' => 'local_host',
+                'user' => 'me',
+                'password' => '53cr37',
+            ],
+        ];
+
+        yield [
+            [
+                'DRIVER' => '{OTHER DRIVER}',
+                'HOSTNAME' => 'local_host',
+                'PORT' => '60000',
+                'PROTOCOL' => 'TCPIP',
+                'DATABASE' => 'MY_DB',
+                'UID' => 'un',
+                'PWD' => 'known',
+            ],
+            [
+                'driverClass' => DB2Driver::class,
+                'persistent' => false,
+                'driver' => '{OTHER DRIVER}',
+                'dbname' => 'MY_DB',
+                'dsn' => 'DRIVER={IBM i Access ODBC Driver};SYSTEM=127.0.0.1;DATABASE=MY_DB',
+                'user' => 'un',
+                'password' => 'known',
+                'protocol' => 'TCPIP',
+                'port' => 60000,
+                'host' => 'local_host',
+            ],
+        ];
+    }
+
+    /**
+     * @return void
+     *
+     * @dataProvider getConnectionParametersProvider
+     */
+    public function testGetConnectionParameters(array $expected, array $params)
+    {
+        self::assertSame($expected, DataSourceName::fromConnectionParameters($params)->getConnectionParameters());
     }
 }
