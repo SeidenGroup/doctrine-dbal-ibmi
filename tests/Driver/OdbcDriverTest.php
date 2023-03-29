@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace DoctrineDbalIbmi\Tests\Driver;
 
-use Doctrine\DBAL\DriverManager;
 use DoctrineDbalIbmi\Driver\OdbcDriver;
-use PHPUnit\Framework\TestCase;
 
-final class OdbcDriverTest extends TestCase
+final class OdbcDriverTest extends AbstractDriverTestCase
 {
     /**
      * @return iterable<int|string, array<int, string|array<string, string|int|bool>>>
