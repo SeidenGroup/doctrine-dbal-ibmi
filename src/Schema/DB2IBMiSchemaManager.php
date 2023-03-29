@@ -2,6 +2,7 @@
 
 namespace DoctrineDbalIbmi\Schema;
 
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\DB2SchemaManager;
 use Doctrine\DBAL\Types\Type;
@@ -13,89 +14,12 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
      */
     public function listTableNames()
     {
-        $sql = $this->_platform->getListTablesSQL($this->getDatabase());
+        $sql = $this->_platform->getListTablesSQL($this->_conn->getDatabase());
 
         $tables = $this->_conn->fetchAll($sql);
         $tableNames = $this->_getPortableTablesList($tables);
 
         return $this->filterAssetNames($tableNames);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listSequences($database = null)
-    {
-        if (null === $database) {
-            $database = $this->getDatabase();
-        }
-
-        assert(null !== $database);
-
-        $sql = $this->_platform->getListSequencesSQL($database);
-
-        $sequences = $this->_conn->fetchAll($sql);
-
-        return $this->filterAssetNames($this->_getPortableSequencesList($sequences));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listTableColumns($table, $database = null)
-    {
-        if (null === $database) {
-            $database = $this->getDatabase();
-        }
-
-        assert(null !== $database);
-
-        $sql = $this->_platform->getListTableColumnsSQL($table, $database);
-
-        $tableColumns = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableTableColumnList($table, $database, $tableColumns);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listTableIndexes($table)
-    {
-        $sql = $this->_platform->getListTableIndexesSQL($table, $this->getDatabase());
-
-        $tableIndexes = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableTableIndexesList($tableIndexes, $table);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listViews()
-    {
-        $database = $this->getDatabase();
-
-        assert(null !== $database);
-
-        $sql = $this->_platform->getListViewsSQL($database);
-        $views = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableViewsList($views);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function listTableForeignKeys($table, $database = null)
-    {
-        if (is_null($database)) {
-            $database = $this->getDatabase();
-        }
-        $sql = $this->_platform->getListTableForeignKeysSQL($table, $database);
-        $tableForeignKeys = $this->_conn->fetchAll($sql);
-
-        return $this->_getPortableTableForeignKeysList($tableForeignKeys);
     }
 
     /**
@@ -176,16 +100,12 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
     /**
      * Returns database name
      *
-     * @return string|null
+     * @deprecated To be removed in the next major version, use `Connection::getDatabase()` instead.
+     *
+     * @return string
      */
     protected function getDatabase()
     {
-        // In iSeries systems, with SQL naming, the default database name is specified in driverOptions['i5_lib']
-        $dbParams = $this->_conn->getParams();
-        if (array_key_exists('driverOptions', $dbParams) && array_key_exists('i5_lib', $dbParams['driverOptions'])) {
-            return $dbParams['driverOptions']['i5_lib'];
-        }
-
-        return null;
+        return $this->_conn->getDatabase();
     }
 }

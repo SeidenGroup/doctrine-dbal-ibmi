@@ -28,9 +28,14 @@ abstract class AbstractDB2Driver implements Driver
         $params = DataSourceName::fromConnectionParameters($conn->getParams())
             ->getConnectionParameters();
 
-        assert(is_string($params['dbname']));
+        // In iSeries systems, with SQL naming, the default database name is specified in ['driverOptions' => ['i5_lib' = ?]]
+        $database = DB2Driver::class === $params['driverClass'] && isset($params['driverOptions']['i5_lib']) ?
+            $params['driverOptions']['i5_lib'] :
+            $params['dbname'];
 
-        return $params['dbname'];
+        assert(is_string($database));
+
+        return $database;
     }
 
     /**

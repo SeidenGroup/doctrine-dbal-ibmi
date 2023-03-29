@@ -2,10 +2,8 @@
 
 namespace DoctrineDbalIbmi\Driver;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\VersionAwarePlatformDriver;
 use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
-use DoctrineDbalIbmi\Schema\DB2IBMiSchemaManager;
 
 class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
 {
@@ -52,21 +50,5 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
     public function createDatabasePlatformForVersion($version)
     {
         return new DB2IBMiPlatform();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDatabasePlatform()
-    {
-        return new DB2IBMiPlatform();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSchemaManager(Connection $conn)
-    {
-        return new DB2IBMiSchemaManager($conn);
     }
 }

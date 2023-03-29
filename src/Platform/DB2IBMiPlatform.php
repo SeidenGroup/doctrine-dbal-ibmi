@@ -108,6 +108,8 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getListTableColumnsSQL($table, $database = null)
     {
+        assert(null !== $database);
+
         return "
             SELECT DISTINCT
                c.column_def as default,
@@ -143,80 +145,79 @@ class DB2IBMiPlatform extends DB2Platform
                     ON tc.CONSTRAINT_NAME = spk.PK_NAME AND tc.TABLE_SCHEMA = spk.TABLE_SCHEM AND tc.TABLE_NAME = spk.TABLE_NAME
                 WHERE CONSTRAINT_TYPE = 'PRIMARY KEY'
                 AND UPPER(tc.TABLE_NAME) = UPPER('" . $table . "')
-                ". ($database !== null ? "AND tc.TABLE_SCHEMA = UPPER('" . $database . "')" : '') ."
+                AND tc.TABLE_SCHEMA = UPPER('" . $database . "')
              ) pk ON
                 c.TABLE_SCHEM = pk.TABLE_SCHEMA
                 AND c.TABLE_NAME = pk.TABLE_NAME
                 AND c.COLUMN_NAME = pk.COLUMN_NAME
              WHERE
                 UPPER(c.TABLE_NAME) = UPPER('" . $table . "')
-                ". ($database  !== null ? "AND c.TABLE_SCHEM = UPPER('" . $database . "')" : '') ."
+                AND c.TABLE_SCHEM = UPPER('" . $database . "')
              ORDER BY c.ordinal_position
         ";
     }
 
     /**
-     * @param string|null $database
+     * @param string $database
      *
      * {@inheritDoc}
      */
     public function getListTablesSQL($database = null)
     {
+        assert(null !== $database);
+
         return "
             SELECT
-              DISTINCT NAME
+                DISTINCT NAME
             FROM
                 SYSIBM.tables t
             WHERE
-              table_type='BASE TABLE'
-              ". ($database !== null ? "AND t.TABLE_SCHEMA = UPPER('" . $database . "')" : '') ."
+                table_type = 'BASE TABLE'
+                AND t.TABLE_SCHEMA = UPPER('" . $database . "')
             ORDER BY NAME
         ";
     }
 
     /**
-     * @param string|null $database
-     *
      * {@inheritDoc}
      */
-    public function getListViewsSQL($database = null)
+    public function getListViewsSQL($database)
     {
         return "
             SELECT
               DISTINCT NAME,
               TEXT
             FROM QSYS2.sysviews v
-            WHERE 1=1
-            ". ($database !== null ? "AND v.TABLE_SCHEMA = UPPER('" . $database . "')" : '') ."
+            WHERE v.TABLE_SCHEMA = UPPER('" . $database . "')
             ORDER BY NAME
         ";
     }
 
     /**
-     * @param string|null $database
-     *
      * {@inheritDoc}
      */
     public function getListTableIndexesSQL($table, $database = null)
     {
-        return  "
+        assert(null !== $database);
+
+        return "
             SELECT
-                  scc.CONSTRAINT_NAME as key_name,
-                  scc.COLUMN_NAME as column_name,
-                  CASE
-                      WHEN sc.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN 1
-                      ELSE 0
-                  END AS primary,
-                  CASE
-                      WHEN sc.CONSTRAINT_TYPE = 'UNIQUE' THEN 0
-                      ELSE 1
-                  END AS non_unique
-              FROM
-              QSYS2.syscstcol scc
-              LEFT JOIN QSYS2.syscst sc ON
-                  scc.TABLE_SCHEMA = sc.TABLE_SCHEMA AND scc.TABLE_NAME = sc.TABLE_NAME AND scc.CONSTRAINT_NAME = sc.CONSTRAINT_NAME
+                scc.CONSTRAINT_NAME as key_name,
+                scc.COLUMN_NAME as column_name,
+                CASE
+                    WHEN sc.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN 1
+                    ELSE 0
+                END AS primary,
+                CASE
+                    WHEN sc.CONSTRAINT_TYPE = 'UNIQUE' THEN 0
+                    ELSE 1
+                END AS non_unique
+            FROM
+            QSYS2.syscstcol scc
+            LEFT JOIN QSYS2.syscst sc ON
+                scc.TABLE_SCHEMA = sc.TABLE_SCHEMA AND scc.TABLE_NAME = sc.TABLE_NAME AND scc.CONSTRAINT_NAME = sc.CONSTRAINT_NAME
             WHERE scc.TABLE_NAME = UPPER('" . $table . "')
-            ". ($database !== null ? "AND scc.TABLE_SCHEMA = UPPER('" . $database . "')" : '') ."
+            AND scc.TABLE_SCHEMA = UPPER('" . $database . "')
         ";
     }
 
@@ -227,6 +228,8 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getListTableForeignKeysSQL($table, $database = null)
     {
+        assert(null !== $database);
+
         return "
             SELECT DISTINCT
                 fk.COLUMN_NAME AS local_column,
@@ -243,7 +246,7 @@ class DB2IBMiPlatform extends DB2Platform
                 rc.UNIQUE_CONSTRAINT_SCHEMA = pk.CONSTRAINT_SCHEMA AND
                 rc.UNIQUE_CONSTRAINT_NAME = pk.CONSTRAINT_NAME
             WHERE fk.TABLE_NAME = UPPER('" . $table . "')
-            " . ($database !== null ? "AND fk.TABLE_SCHEMA = UPPER('" . $database . "')" : '') . "
+            AND fk.TABLE_SCHEMA = UPPER('" . $database . "')
         ";
     }
 
