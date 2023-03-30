@@ -69,6 +69,6 @@ final class DB2DriverTest extends AbstractDriverTestCase
 
     public function testGetName(): void
     {
-        self::assertSame('ibm_db2_i', (new DB2Driver())->getName());
+        static::assertSame('ibm_db2_i', (new DB2Driver())->getName());
     }
 }
