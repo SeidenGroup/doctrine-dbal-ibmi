@@ -10,6 +10,7 @@
 namespace DoctrineDbalIbmi\Driver;
 
 use Doctrine\DBAL\Driver\IBMDB2\DB2Connection;
+use Doctrine\DBAL\Driver\IBMDB2\DB2Exception;
 
 /**
  * IBMi Db2 Connection.
@@ -31,7 +32,7 @@ class DB2IBMiConnection extends DB2Connection
      * @param string|null $password
      * @param mixed[]     $driverOptions
      *
-     * @throws \Doctrine\DBAL\Driver\IBMDB2\DB2Exception
+     * @throws DB2Exception
      */
     public function __construct(array $params, $username, $password, array $driverOptions = [])
     {
