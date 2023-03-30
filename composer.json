@@ -18,6 +18,7 @@
         "doctrine/dbal": "^2.13.9"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.3",
         "phpstan/phpstan": "^1.4.10",
         "phpstan/phpstan-strict-rules": "^1.1",
         "phpunit/phpunit": "^6.5 || ^9.6"

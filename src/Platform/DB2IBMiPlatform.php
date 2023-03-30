@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the doctrine-dbal-ibmi package.
+ * Copyright (c) 2016 Alan Seiden Consulting LLC, James Titcumb
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DoctrineDbalIbmi\Platform;
 
 use Doctrine\DBAL\Exception;
@@ -31,46 +38,37 @@ class DB2IBMiPlatform extends DB2Platform
     public function initializeDoctrineTypeMappings()
     {
         $this->doctrineTypeMapping = [
-            'smallint'      => Types::SMALLINT,
-            'bigint'        => Types::BIGINT,
-            'integer'       => Types::INTEGER,
-            'rowid'         => Types::INTEGER,
-            'time'          => Types::TIME_MUTABLE,
-            'date'          => Types::DATE_MUTABLE,
-            'varchar'       => Types::STRING,
-            'character'     => Types::STRING,
-            'char'          => Types::STRING,
-            'nvarchar'      => Types::STRING,
-            'nchar'         => Types::STRING,
+            'smallint' => Types::SMALLINT,
+            'bigint' => Types::BIGINT,
+            'integer' => Types::INTEGER,
+            'rowid' => Types::INTEGER,
+            'time' => Types::TIME_MUTABLE,
+            'date' => Types::DATE_MUTABLE,
+            'varchar' => Types::STRING,
+            'character' => Types::STRING,
+            'char' => Types::STRING,
+            'nvarchar' => Types::STRING,
+            'nchar' => Types::STRING,
             'char () for bit data' => Types::STRING,
             'varchar () for bit data' => Types::STRING,
-            'varg'          => Types::STRING,
-            'vargraphic'    => Types::STRING,
-            'graphic'       => Types::STRING,
-            'varbinary'     => Types::BINARY,
-            'binary'        => Types::BINARY,
-            'varbin'        => Types::BINARY,
-            'clob'          => Types::TEXT,
-            'nclob'         => Types::TEXT,
-            'dbclob'        => Types::TEXT,
-            'blob'          => Types::BLOB,
-            'decimal'       => Types::DECIMAL,
-            'numeric'       => Types::FLOAT,
-            'double'        => Types::FLOAT,
-            'real'          => Types::FLOAT,
-            'float'         => Types::FLOAT,
-            'timestamp'     => Types::DATETIME_MUTABLE,
-            'timestmp'      => Types::DATETIME_MUTABLE,
+            'varg' => Types::STRING,
+            'vargraphic' => Types::STRING,
+            'graphic' => Types::STRING,
+            'varbinary' => Types::BINARY,
+            'binary' => Types::BINARY,
+            'varbin' => Types::BINARY,
+            'clob' => Types::TEXT,
+            'nclob' => Types::TEXT,
+            'dbclob' => Types::TEXT,
+            'blob' => Types::BLOB,
+            'decimal' => Types::DECIMAL,
+            'numeric' => Types::FLOAT,
+            'double' => Types::FLOAT,
+            'real' => Types::FLOAT,
+            'float' => Types::FLOAT,
+            'timestamp' => Types::DATETIME_MUTABLE,
+            'timestmp' => Types::DATETIME_MUTABLE,
         ];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getVarcharTypeDeclarationSQLSnippet($length, $fixed)
-    {
-        return $fixed ? (0 < $length ? 'CHAR(' . $length . ')' : 'CHAR(255)')
-            : (0 < $length ? 'VARCHAR(' . $length . ')' : 'VARCHAR(255)');
     }
 
     /**
@@ -83,7 +81,7 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getVarcharTypeDeclarationSQL(array $field)
     {
-        if ( !isset($field['length'])) {
+        if (!isset($field['length'])) {
             $field['length'] = $this->getVarcharDefaultLength();
         }
 
@@ -101,7 +99,6 @@ class DB2IBMiPlatform extends DB2Platform
 
         return $this->getVarcharTypeDeclarationSQLSnippet($field['length'], $fixed);
     }
-
 
     /**
      * {@inheritDoc}
@@ -144,15 +141,15 @@ class DB2IBMiPlatform extends DB2Platform
                 LEFT JOIN SYSIBM.SQLPRIMARYKEYS spk
                     ON tc.CONSTRAINT_NAME = spk.PK_NAME AND tc.TABLE_SCHEMA = spk.TABLE_SCHEM AND tc.TABLE_NAME = spk.TABLE_NAME
                 WHERE CONSTRAINT_TYPE = 'PRIMARY KEY'
-                AND UPPER(tc.TABLE_NAME) = UPPER('" . $table . "')
-                AND tc.TABLE_SCHEMA = UPPER('" . $database . "')
+                AND UPPER(tc.TABLE_NAME) = UPPER('".$table."')
+                AND tc.TABLE_SCHEMA = UPPER('".$database."')
              ) pk ON
                 c.TABLE_SCHEM = pk.TABLE_SCHEMA
                 AND c.TABLE_NAME = pk.TABLE_NAME
                 AND c.COLUMN_NAME = pk.COLUMN_NAME
              WHERE
-                UPPER(c.TABLE_NAME) = UPPER('" . $table . "')
-                AND c.TABLE_SCHEM = UPPER('" . $database . "')
+                UPPER(c.TABLE_NAME) = UPPER('".$table."')
+                AND c.TABLE_SCHEM = UPPER('".$database."')
              ORDER BY c.ordinal_position
         ";
     }
@@ -173,7 +170,7 @@ class DB2IBMiPlatform extends DB2Platform
                 SYSIBM.tables t
             WHERE
                 table_type = 'BASE TABLE'
-                AND t.TABLE_SCHEMA = UPPER('" . $database . "')
+                AND t.TABLE_SCHEMA = UPPER('".$database."')
             ORDER BY NAME
         ";
     }
@@ -188,7 +185,7 @@ class DB2IBMiPlatform extends DB2Platform
               DISTINCT NAME,
               TEXT
             FROM QSYS2.sysviews v
-            WHERE v.TABLE_SCHEMA = UPPER('" . $database . "')
+            WHERE v.TABLE_SCHEMA = UPPER('".$database."')
             ORDER BY NAME
         ";
     }
@@ -216,8 +213,8 @@ class DB2IBMiPlatform extends DB2Platform
             QSYS2.syscstcol scc
             LEFT JOIN QSYS2.syscst sc ON
                 scc.TABLE_SCHEMA = sc.TABLE_SCHEMA AND scc.TABLE_NAME = sc.TABLE_NAME AND scc.CONSTRAINT_NAME = sc.CONSTRAINT_NAME
-            WHERE scc.TABLE_NAME = UPPER('" . $table . "')
-            AND scc.TABLE_SCHEMA = UPPER('" . $database . "')
+            WHERE scc.TABLE_NAME = UPPER('".$table."')
+            AND scc.TABLE_SCHEMA = UPPER('".$database."')
         ";
     }
 
@@ -245,25 +242,25 @@ class DB2IBMiPlatform extends DB2Platform
             LEFT JOIN QSYS2.SYSCSTCOL pk ON
                 rc.UNIQUE_CONSTRAINT_SCHEMA = pk.CONSTRAINT_SCHEMA AND
                 rc.UNIQUE_CONSTRAINT_NAME = pk.CONSTRAINT_NAME
-            WHERE fk.TABLE_NAME = UPPER('" . $table . "')
-            AND fk.TABLE_SCHEMA = UPPER('" . $database . "')
+            WHERE fk.TABLE_NAME = UPPER('".$table."')
+            AND fk.TABLE_SCHEMA = UPPER('".$database."')
         ";
     }
 
     /**
      * @return string
      *
-     * @throws \Doctrine\DBAL\DBALException If not supported on this platform.
+     * @throws \Doctrine\DBAL\DBALException if not supported on this platform
      */
     public function getListDatabasesSQL()
     {
-        return "
+        return '
             SELECT
               DISTINCT TABLE_SCHEMA
             FROM
                 SYSIBM.tables t
             ORDER BY TABLE_SCHEMA
-        ";
+        ';
     }
 
     /**
@@ -271,7 +268,24 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getCreateDatabaseSQL($database)
     {
-        return "CREATE COLLECTION ".$database;
+        return 'CREATE COLLECTION '.$database;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDateTimeFormatString()
+    {
+        return 'Y-m-d-H.i.s.u';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getVarcharTypeDeclarationSQLSnippet($length, $fixed)
+    {
+        return $fixed ? (0 < $length ? 'CHAR('.$length.')' : 'CHAR(255)')
+            : (0 < $length ? 'VARCHAR('.$length.')' : 'VARCHAR(255)');
     }
 
     /**
@@ -286,10 +300,7 @@ class DB2IBMiPlatform extends DB2Platform
         }
 
         if ($limit < 0) {
-            throw new Exception(sprintf(
-                'Limit must be a positive integer or zero, %d given',
-                $limit
-            ));
+            throw new Exception(sprintf('Limit must be a positive integer or zero, %d given', $limit));
         }
 
         if (0 === $offset && false === strpos($query, 'ORDER BY')) {
@@ -306,13 +317,5 @@ class DB2IBMiPlatform extends DB2Platform
         }
 
         return $query;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDateTimeFormatString()
-    {
-        return 'Y-m-d-H.i.s.u';
     }
 }

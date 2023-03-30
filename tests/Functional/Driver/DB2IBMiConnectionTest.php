@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the doctrine-dbal-ibmi package.
+ * Copyright (c) 2016 Alan Seiden Consulting LLC, James Titcumb
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DoctrineDbalIbmi\Tests\Functional\Driver;
 
 use Doctrine\DBAL\DriverManager;
@@ -20,7 +27,7 @@ final class DB2IBMiConnectionTest extends AbstractTestCase
         $connection = self::getConnection(DB2Driver::class);
         $wrappedConnection = $connection->getWrappedConnection();
 
-        self::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
+        static::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
     }
 
     /**
@@ -34,13 +41,13 @@ final class DB2IBMiConnectionTest extends AbstractTestCase
     {
         $connectionParams = [
             'driverClass' => DB2Driver::class,
-            'dbname' => 'DOCTRINE_CATALOGED'
+            'dbname' => 'DOCTRINE_CATALOGED',
         ];
 
         $connection = DriverManager::getConnection($connectionParams);
         $wrappedConnection = $connection->getWrappedConnection();
 
-        self::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
+        static::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
     }
 
     /**
@@ -63,6 +70,6 @@ final class DB2IBMiConnectionTest extends AbstractTestCase
         $connection = DriverManager::getConnection($connectionParams);
         $wrappedConnection = $connection->getWrappedConnection();
 
-        self::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
+        static::assertInstanceOf(DB2IBMiConnection::class, $wrappedConnection);
     }
 }

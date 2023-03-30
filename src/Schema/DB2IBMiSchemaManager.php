@@ -1,8 +1,14 @@
 <?php
 
+/*
+ * This file is part of the doctrine-dbal-ibmi package.
+ * Copyright (c) 2016 Alan Seiden Consulting LLC, James Titcumb
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DoctrineDbalIbmi\Schema;
 
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\DB2SchemaManager;
 use Doctrine\DBAL\Types\Type;
@@ -58,6 +64,7 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
                 break;
             case 'string':
                 $fixed = true;
+
                 break;
             case 'binary':
                 break;
@@ -68,28 +75,30 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
             case 'decimal':
                 $scale = $tableColumn['scale'];
                 $precision = $tableColumn['length'];
+
                 break;
             case 'float':
                 $scale = $tableColumn['scale'];
                 $precision = $tableColumn['length'];
+
                 break;
             case 'datetime':
                 break;
         }
 
-        $options = array(
-            'length'        => $length,
-            'unsigned'      => $unsigned,
-            'fixed'         => $fixed,
-            'default'       => $default,
+        $options = [
+            'length' => $length,
+            'unsigned' => $unsigned,
+            'fixed' => $fixed,
+            'default' => $default,
             'autoincrement' => (bool) $tableColumn['autoincrement'],
-            'notnull'       => $tableColumn['nulls'] === 'N',
-            'scale'         => null,
-            'precision'     => null,
-            'platformOptions' => array(),
-        );
+            'notnull' => 'N' === $tableColumn['nulls'],
+            'scale' => null,
+            'precision' => null,
+            'platformOptions' => [],
+        ];
 
-        if ($scale !== null && $precision !== null) {
+        if (null !== $scale && null !== $precision) {
             $options['scale'] = $scale;
             $options['precision'] = $precision;
         }
@@ -100,7 +109,7 @@ class DB2IBMiSchemaManager extends DB2SchemaManager
     /**
      * Returns database name
      *
-     * @deprecated To be removed in the next major version, use `Connection::getDatabase()` instead.
+     * @deprecated to be removed in the next major version, use `Connection::getDatabase()` instead
      *
      * @return string
      */

@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the doctrine-dbal-ibmi package.
+ * Copyright (c) 2016 Alan Seiden Consulting LLC, James Titcumb
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DoctrineDbalIbmi\Driver;
 
 use Doctrine\DBAL\Driver\IBMDB2\DB2Connection;
@@ -17,7 +24,7 @@ class OdbcIBMiConnection extends Connection
     /**
      * @var mixed[]
      */
-    protected $driverOptions = array();
+    protected $driverOptions = [];
 
     /**
      * @param mixed[] $params
@@ -27,7 +34,7 @@ class OdbcIBMiConnection extends Connection
      *
      * @throws \Doctrine\DBAL\Driver\IBMDB2\DB2Exception
      */
-    public function __construct(array $params, $username, $password, array $driverOptions = array())
+    public function __construct(array $params, $username, $password, array $driverOptions = [])
     {
         $this->driverOptions = $driverOptions;
         $this->driverOptions[\PDO::ATTR_PERSISTENT] = false;
@@ -63,14 +70,11 @@ class OdbcIBMiConnection extends Connection
     {
         // if "i5 naming" is on, use '/' to separate schema and table. Otherwise use '.'
         if (array_key_exists('i5_naming', $this->driverOptions) && $this->driverOptions['i5_naming']) {
-
             // "i5 naming" mode requires a slash
             return '/';
-
-        } else {
-            // SQL naming requires a dot
-            return '.';
         }
+        // SQL naming requires a dot
+        return '.';
     }
 
     /**
