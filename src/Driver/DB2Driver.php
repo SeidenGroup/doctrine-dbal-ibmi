@@ -38,6 +38,6 @@ class DB2Driver extends AbstractDB2Driver
      */
     public function getName()
     {
-        return 'ibm_db2';
+        return 'ibm_db2_i';
     }
 }
