@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace DoctrineDbalIbmi\Tests\Driver;
 
-use Doctrine\DBAL\DriverManager;
 use DoctrineDbalIbmi\Driver\OdbcDriver;
 
 final class OdbcDriverTest extends AbstractDriverTestCase
@@ -53,6 +52,6 @@ final class OdbcDriverTest extends AbstractDriverTestCase
 
     public function testGetName(): void
     {
-        self::assertSame('pdo_odbc_ibm_db2_i', (new OdbcDriver())->getName());
+        static::assertSame('pdo_odbc_ibm_db2_i', (new OdbcDriver())->getName());
     }
 }
