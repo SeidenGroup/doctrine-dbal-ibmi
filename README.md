@@ -39,7 +39,7 @@ $connectionParams = [
     'driverClass' => OdbcDriver::class,
     'host' => 'localhost',
     'dbname' => 'mydb',
-    'username' => 'user',
+    'user' => 'user',
     'password' => 'secret',
 ];
 
@@ -67,7 +67,7 @@ $connection = [
     'driverClass' => OdbcDriver::class,
     'host' => 'localhost',
     'dbname' => 'mydb',
-    'username' => 'user',
+    'user' => 'user',
     'password' => 'secret',
     'persistent' => false,
 ];
@@ -94,7 +94,7 @@ return [
                 'params' => [
                     'host' => 'localhost',
                     'dbname' => 'mydb',
-                    'username' => 'user',
+                    'user' => 'user',
                     'password' => 'secret',
                     'persistent' => false,
                 ],
