@@ -73,35 +73,6 @@ class DB2IBMiPlatform extends DB2Platform
     }
 
     /**
-     * This method is overridden in order to backport the fix provided in doctrine/dbal >= 2.8 for the type inference regarding
-     * the maximum length for `CHAR` declared in `getCharMaxLength()`.
-     *
-     * @see https://github.com/doctrine/dbal/pull/3133
-     *
-     * {@inheritDoc}
-     */
-    public function getVarcharTypeDeclarationSQL(array $field)
-    {
-        if (!isset($field['length'])) {
-            $field['length'] = $this->getVarcharDefaultLength();
-        }
-
-        $fixed = $field['fixed'] ?? false;
-
-        $maxLength = $fixed
-            ? $this->getCharMaxLength()
-            : $this->getVarcharMaxLength();
-
-        if ($field['length'] > $maxLength) {
-            return $this->getClobTypeDeclarationSQL($field);
-        }
-
-        assert(is_int($field['length']));
-
-        return $this->getVarcharTypeDeclarationSQLSnippet($field['length'], $fixed);
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function getListTableColumnsSQL($table, $database = null)
