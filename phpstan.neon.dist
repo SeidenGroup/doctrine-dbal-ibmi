@@ -8,6 +8,7 @@ parameters:
     reportUnmatchedIgnoredErrors: false
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        - '#^Parameter \#(2|3) \$(username|password) of method Doctrine\\DBAL\\Driver\\IBMDB2\\DB2Connection::__construct\(\) expects string, string\|null given\.$#'
 includes:
-    - phpstan-baseline.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
