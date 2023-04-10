@@ -11,10 +11,12 @@ namespace DoctrineDbalIbmi\Driver;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\VersionAwarePlatformDriver;
 use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 use DoctrineDbalIbmi\Schema\DB2IBMiSchemaManager;
 
-abstract class AbstractDB2Driver implements Driver
+abstract class AbstractDB2Driver implements Driver, VersionAwarePlatformDriver
 {
     public const SYSTEM_IBMI = 'AIX';
     public const SYSTEM_IBMI_OS400 = 'OS400';
@@ -63,5 +65,39 @@ abstract class AbstractDB2Driver implements Driver
     public function getSchemaManager(Connection $conn)
     {
         return new DB2IBMiSchemaManager($conn);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createDatabasePlatformForVersion($version)
+    {
+        if (version_compare($this->getVersionNumber($version), '7.3', '>=')) {
+            return $this->getDatabasePlatform();
+        }
+
+        throw new Exception(sprintf('The version %s is not supported, you must use version 7.3 or higher.', $version));
+    }
+
+    /**
+     * Detects IBM DB2 for i server version
+     *
+     * @param string $versionString Version string as returned by IBM DB2 server, i.e. '07.04.0015'
+     *
+     * @throws Exception
+     */
+    private function getVersionNumber(string $versionString): string
+    {
+        if (
+            0 === preg_match(
+                '/^(?:[^\s]+\s)?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)/i',
+                $versionString,
+                $versionParts
+            )
+        ) {
+            throw Exception::invalidPlatformVersionSpecified($versionString, '^(?:[^\s]+\s)?<major_version>.<minor_version>.<patch_version>');
+        }
+
+        return $versionParts['major'].'.'.$versionParts['minor'].'.'.$versionParts['patch'];
     }
 }

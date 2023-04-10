@@ -11,7 +11,10 @@ namespace DoctrineDbalIbmi\Tests\Platform;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\DBAL\VersionAwarePlatformDriver;
 use DoctrineDbalIbmi\Driver\DB2Driver;
+use DoctrineDbalIbmi\Driver\OdbcDriver;
+use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 use DoctrineDbalIbmi\Tests\AbstractTestCase;
 
 final class DB2IBMiPlatformTest extends AbstractTestCase
@@ -241,5 +244,43 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         $this->expectExceptionMessage('Offset must be a positive integer or zero, -1 given');
 
         $platform->modifyLimitQuery($sql, 1, -1);
+    }
+
+    /**
+     * @return iterable<int|string, array<int, string>>
+     *
+     * @phpstan-return iterable<int|string, array{0: class-string<Exception|DB2IBMiPlatform>, 1: string}>
+     */
+    public function databasePlatformForVersionProvider(): iterable
+    {
+        yield [Exception::class, '07.01.0000'];
+        yield [Exception::class, '07.02.0000'];
+        yield [DB2IBMiPlatform::class, '07.03.0000'];
+        yield [DB2IBMiPlatform::class, '07.04.0015'];
+        yield [DB2IBMiPlatform::class, '07.05.0000'];
+    }
+
+    /**
+     * @phpstan-param class-string<Exception|DB2IBMiPlatform> $expected
+     *
+     * @return void
+     *
+     * @dataProvider databasePlatformForVersionProvider
+     */
+    public function testCreateDatabasePlatformForVersion(string $expected, string $version)
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+        $driver = $connection->getDriver();
+
+        static::assertInstanceOf(VersionAwarePlatformDriver::class, $driver);
+
+        if (Exception::class === $expected) {
+            $this->expectException(Exception::class);
+            $this->expectExceptionMessageMatches('#^The version \d+\.\d+\.\d+ is not supported, you must use version 7\.3 or higher\.$#');
+        }
+
+        $platform = $driver->createDatabasePlatformForVersion($version);
+
+        static::assertInstanceOf($expected, $platform);
     }
 }

@@ -95,12 +95,4 @@ class OdbcIBMiConnection extends Connection
 
         return $handle;
     }
-
-    /**
-     * @return true
-     */
-    public function requiresQueryForServerVersion()
-    {
-        return true;
-    }
 }
