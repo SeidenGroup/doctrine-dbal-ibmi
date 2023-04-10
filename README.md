@@ -5,7 +5,7 @@
 [![Build and test](https://github.com/SeidenGroup/doctrine-dbal-ibmi/actions/workflows/test.yml/badge.svg)](https://github.com/SeidenGroup/doctrine-dbal-ibmi/actions/workflows/test.yml)
 
 [Doctrine DBAL](https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/introduction.html#introduction)
-drivers for [DB2 on the IBM i platform](https://www.ibm.com/docs/en/i/7.4?topic=overview-db2-i).
+drivers for [DB2 on the IBM i platform](https://www.ibm.com/docs/en/i/7.4?topic=overview-db2-i) (version [7.3](https://www.ibm.com/docs/en/i/7.3?topic=reference-whats-new-i-73) and higher).
 
 Based on the original work by [@cassvail](https://github.com/cassvail) in [doctrine/dbal#910](https://github.com/doctrine/dbal/pull/910).
 

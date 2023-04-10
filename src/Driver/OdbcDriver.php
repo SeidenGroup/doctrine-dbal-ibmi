@@ -10,7 +10,6 @@
 namespace DoctrineDbalIbmi\Driver;
 
 use Doctrine\DBAL\VersionAwarePlatformDriver;
-use DoctrineDbalIbmi\Platform\DB2IBMiPlatform;
 
 class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
 {
@@ -52,10 +51,5 @@ class OdbcDriver extends AbstractDB2Driver implements VersionAwarePlatformDriver
     public function getName()
     {
         return 'pdo_odbc_ibm_db2_i';
-    }
-
-    public function createDatabasePlatformForVersion($version)
-    {
-        return new DB2IBMiPlatform();
     }
 }
