@@ -17,6 +17,23 @@ use Doctrine\DBAL\Types\Types;
 class DB2IBMiPlatform extends DB2Platform
 {
     /**
+     * @see https://www.ibm.com/docs/en/rdfi/9.6.0?topic=views-sqlcolumns#d115487e7
+     */
+    private const SQLCOLUMNS_PSEUDO_COLUMN_IS_IDENTITY = 2;
+    private const SQLCOLUMNS_HAS_DEFAULT_AS_IDENTITY_GENERATED_BY_DEFAULT = 'J';
+
+    /**
+     * @see https://www.ibm.com/docs/en/rdfi/9.6.0?topic=views-syscst#d152672e7
+     */
+    private const SYSCST_CONSTRAINT_TYPE_PRIMARY_KEY = 'PRIMARY KEY';
+    private const SYSCST_CONSTRAINT_TYPE_UNIQUE = 'UNIQUE';
+
+    /**
+     * @see https://www.ibm.com/docs/en/rdfi/9.6.0?topic=views-tables#d265436e7
+     */
+    private const TABLES_TABLE_TYPE_BASE_TABLE = 'BASE TABLE';
+
+    /**
      * This method is overridden in order to avoid behavior changes when using doctrine/dbal >= 2.8, because a change
      * introduced in the limit for the `CHAR` type in the parent class.
      *
@@ -79,51 +96,65 @@ class DB2IBMiPlatform extends DB2Platform
     {
         assert(null !== $database);
 
-        return "
-            SELECT DISTINCT
-               c.column_def as default,
-               c.table_schem as tabschema,
-               c.table_name as tabname,
-               c.column_name as colname,
-               c.ordinal_position as colno,
-               c.type_name as typename,
-               c.is_nullable as nulls,
-               c.column_size as length,
-               c.decimal_digits as scale,
-               CASE
-                   WHEN c.pseudo_column = 2 THEN 'YES'
-                   ELSE 'NO'
-               END as identity,
-               pk.constraint_type AS tabconsttype,
-               pk.key_seq as colseq,
-               CASE
-                   WHEN c.HAS_DEFAULT = 'J' THEN 1
-                   ELSE 0
-               END AS autoincrement
-             FROM SYSIBM.sqlcolumns as c
-             LEFT JOIN
-             (
-                SELECT
-                tc.TABLE_SCHEMA,
-                tc.TABLE_NAME,
-                tc.CONSTRAINT_TYPE,
-                spk.COLUMN_NAME,
-                spk.KEY_SEQ
-                FROM SYSIBM.TABLE_CONSTRAINTS tc
-                LEFT JOIN SYSIBM.SQLPRIMARYKEYS spk
-                    ON tc.CONSTRAINT_NAME = spk.PK_NAME AND tc.TABLE_SCHEMA = spk.TABLE_SCHEM AND tc.TABLE_NAME = spk.TABLE_NAME
-                WHERE CONSTRAINT_TYPE = 'PRIMARY KEY'
-                AND UPPER(tc.TABLE_NAME) = UPPER('".$table."')
-                AND tc.TABLE_SCHEMA = UPPER('".$database."')
-             ) pk ON
-                c.TABLE_SCHEM = pk.TABLE_SCHEMA
-                AND c.TABLE_NAME = pk.TABLE_NAME
-                AND c.COLUMN_NAME = pk.COLUMN_NAME
-             WHERE
-                UPPER(c.TABLE_NAME) = UPPER('".$table."')
-                AND c.TABLE_SCHEM = UPPER('".$database."')
-             ORDER BY c.ordinal_position
-        ";
+        return sprintf(
+            <<<'SQL'
+SELECT DISTINCT
+    c.COLUMN_DEF AS default,
+    c.TABLE_SCHEM AS tabschema,
+    c.TABLE_NAME AS tabname,
+    c.COLUMN_NAME AS colname,
+    c.ORDINAL_POSITION AS colno,
+    c.TYPE_NAME AS typename,
+    c.IS_NULLABLE AS nulls,
+    c.COLUMN_SIZE AS length,
+    c.DECIMAL_DIGITS AS scale,
+    CASE
+        WHEN c.PSEUDO_COLUMN = %1$u THEN 'YES'
+        ELSE 'NO'
+    END AS identity,
+    pk.CONSTRAINT_TYPE AS tabconsttype,
+    pk.KEY_SEQ AS colseq,
+    CASE
+        WHEN c.HAS_DEFAULT = '%2$s' THEN 1
+        ELSE 0
+    END AS autoincrement
+FROM
+    SYSIBM.sqlcolumns AS c
+LEFT JOIN (
+    SELECT
+        tc.TABLE_SCHEMA,
+        tc.TABLE_NAME,
+        tc.CONSTRAINT_TYPE,
+        spk.COLUMN_NAME,
+        spk.KEY_SEQ
+    FROM
+        SYSIBM.TABLE_CONSTRAINTS tc
+    LEFT JOIN
+        SYSIBM.SQLPRIMARYKEYS spk
+        ON tc.CONSTRAINT_NAME = spk.PK_NAME
+        AND tc.TABLE_SCHEMA = spk.TABLE_SCHEM
+        AND tc.TABLE_NAME = spk.TABLE_NAME
+    WHERE
+        CONSTRAINT_TYPE = '%3$s'
+        AND tc.TABLE_SCHEMA = UPPER('%4$s')
+        AND UPPER(tc.TABLE_NAME) = UPPER('%5$s')
+    ) pk
+    ON c.TABLE_SCHEM = pk.TABLE_SCHEMA
+    AND c.TABLE_NAME = pk.TABLE_NAME
+    AND c.COLUMN_NAME = pk.COLUMN_NAME
+WHERE
+    c.TABLE_SCHEM = UPPER('%4$s')
+    AND UPPER(c.TABLE_NAME) = UPPER('%5$s')
+ORDER BY
+    c.ORDINAL_POSITION
+SQL
+            ,
+            self::SQLCOLUMNS_PSEUDO_COLUMN_IS_IDENTITY,
+            self::SQLCOLUMNS_HAS_DEFAULT_AS_IDENTITY_GENERATED_BY_DEFAULT,
+            self::SYSCST_CONSTRAINT_TYPE_PRIMARY_KEY,
+            $database,
+            $table
+        );
     }
 
     /**
@@ -135,16 +166,22 @@ class DB2IBMiPlatform extends DB2Platform
     {
         assert(null !== $database);
 
-        return "
-            SELECT
-                DISTINCT NAME
-            FROM
-                SYSIBM.tables t
-            WHERE
-                table_type = 'BASE TABLE'
-                AND t.TABLE_SCHEMA = UPPER('".$database."')
-            ORDER BY NAME
-        ";
+        return sprintf(
+            <<<'SQL'
+SELECT DISTINCT
+    t.NAME
+FROM
+    SYSIBM.tables t
+WHERE
+    t.TABLE_TYPE = '%s'
+    AND t.TABLE_SCHEMA = UPPER('%s')
+ORDER BY
+    t.NAME
+SQL
+            ,
+            self::TABLES_TABLE_TYPE_BASE_TABLE,
+            $database
+        );
     }
 
     /**
@@ -152,14 +189,21 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getListViewsSQL($database)
     {
-        return "
-            SELECT
-              DISTINCT NAME,
-              TEXT
-            FROM QSYS2.sysviews v
-            WHERE v.TABLE_SCHEMA = UPPER('".$database."')
-            ORDER BY NAME
-        ";
+        return sprintf(
+            <<<'SQL'
+SELECT DISTINCT
+    v.NAME,
+    v.TEXT
+FROM
+    QSYS2.sysviews v
+WHERE
+    v.TABLE_SCHEMA = UPPER('%s')
+ORDER BY
+    v.NAME
+SQL
+            ,
+            $database
+        );
     }
 
     /**
@@ -169,25 +213,36 @@ class DB2IBMiPlatform extends DB2Platform
     {
         assert(null !== $database);
 
-        return "
-            SELECT
-                scc.CONSTRAINT_NAME as key_name,
-                scc.COLUMN_NAME as column_name,
-                CASE
-                    WHEN sc.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN 1
-                    ELSE 0
-                END AS primary,
-                CASE
-                    WHEN sc.CONSTRAINT_TYPE = 'UNIQUE' THEN 0
-                    ELSE 1
-                END AS non_unique
-            FROM
-            QSYS2.syscstcol scc
-            LEFT JOIN QSYS2.syscst sc ON
-                scc.TABLE_SCHEMA = sc.TABLE_SCHEMA AND scc.TABLE_NAME = sc.TABLE_NAME AND scc.CONSTRAINT_NAME = sc.CONSTRAINT_NAME
-            WHERE scc.TABLE_NAME = UPPER('".$table."')
-            AND scc.TABLE_SCHEMA = UPPER('".$database."')
-        ";
+        return sprintf(
+            <<<'SQL'
+SELECT
+    scc.CONSTRAINT_NAME AS key_name,
+    scc.COLUMN_NAME AS column_name,
+    CASE
+        WHEN sc.CONSTRAINT_TYPE = '%s' THEN 1
+        ELSE 0
+    END AS primary,
+    CASE
+        WHEN sc.CONSTRAINT_TYPE = '%s' THEN 0
+        ELSE 1
+    END AS non_unique
+FROM
+    QSYS2.syscstcol scc
+LEFT JOIN
+    QSYS2.syscst sc
+    ON scc.TABLE_SCHEMA = sc.TABLE_SCHEMA
+    AND scc.TABLE_NAME = sc.TABLE_NAME
+    AND scc.CONSTRAINT_NAME = sc.CONSTRAINT_NAME
+WHERE
+    scc.TABLE_SCHEMA = UPPER('%s')
+    AND scc.TABLE_NAME = UPPER('%s')
+SQL
+            ,
+            self::SYSCST_CONSTRAINT_TYPE_PRIMARY_KEY,
+            self::SYSCST_CONSTRAINT_TYPE_UNIQUE,
+            $database,
+            $table
+        );
     }
 
     /**
@@ -199,24 +254,33 @@ class DB2IBMiPlatform extends DB2Platform
     {
         assert(null !== $database);
 
-        return "
-            SELECT DISTINCT
-                fk.COLUMN_NAME AS local_column,
-                pk.TABLE_NAME AS foreign_table,
-                pk.COLUMN_NAME AS foreign_column,
-                fk.CONSTRAINT_NAME AS index_name,
-                rc.UPDATE_RULE AS on_update,
-                rc.DELETE_RULE AS on_delete
-            FROM QSYS2.REFERENTIAL_CONSTRAINTS rc
-            LEFT JOIN QSYS2.SYSCSTCOL fk ON
-                rc.CONSTRAINT_SCHEMA = fk.CONSTRAINT_SCHEMA AND
-                rc.CONSTRAINT_NAME = fk.CONSTRAINT_NAME
-            LEFT JOIN QSYS2.SYSCSTCOL pk ON
-                rc.UNIQUE_CONSTRAINT_SCHEMA = pk.CONSTRAINT_SCHEMA AND
-                rc.UNIQUE_CONSTRAINT_NAME = pk.CONSTRAINT_NAME
-            WHERE fk.TABLE_NAME = UPPER('".$table."')
-            AND fk.TABLE_SCHEMA = UPPER('".$database."')
-        ";
+        return sprintf(
+            <<<'SQL'
+SELECT DISTINCT
+    fk.COLUMN_NAME AS local_column,
+    pk.TABLE_NAME AS foreign_table,
+    pk.COLUMN_NAME AS foreign_column,
+    fk.CONSTRAINT_NAME AS index_name,
+    rc.UPDATE_RULE AS on_update,
+    rc.DELETE_RULE AS on_delete
+FROM
+    QSYS2.REFERENTIAL_CONSTRAINTS rc
+LEFT JOIN
+    QSYS2.SYSCSTCOL fk
+    ON rc.CONSTRAINT_SCHEMA = fk.CONSTRAINT_SCHEMA
+    AND rc.CONSTRAINT_NAME = fk.CONSTRAINT_NAME
+LEFT JOIN
+    QSYS2.SYSCSTCOL pk
+    ON rc.UNIQUE_CONSTRAINT_SCHEMA = pk.CONSTRAINT_SCHEMA
+    AND rc.UNIQUE_CONSTRAINT_NAME = pk.CONSTRAINT_NAME
+WHERE
+    fk.TABLE_SCHEMA = UPPER('%s')
+    AND fk.TABLE_NAME = UPPER('%s')
+SQL
+            ,
+            $database,
+            $table
+        );
     }
 
     /**
@@ -226,13 +290,15 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getListDatabasesSQL()
     {
-        return '
-            SELECT
-              DISTINCT TABLE_SCHEMA
-            FROM
-                SYSIBM.tables t
-            ORDER BY TABLE_SCHEMA
-        ';
+        return <<<'SQL'
+SELECT DISTINCT
+    t.TABLE_SCHEMA
+FROM
+    SYSIBM.tables t
+ORDER BY
+    t.TABLE_SCHEMA
+SQL
+        ;
     }
 
     /**
@@ -240,7 +306,7 @@ class DB2IBMiPlatform extends DB2Platform
      */
     public function getCreateDatabaseSQL($database)
     {
-        return 'CREATE COLLECTION '.$database;
+        return sprintf('CREATE COLLECTION %s', $database);
     }
 
     /**
