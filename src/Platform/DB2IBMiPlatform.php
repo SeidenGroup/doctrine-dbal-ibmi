@@ -333,25 +333,16 @@ SQL
      */
     protected function doModifyLimitQuery($query, $limit, $offset = null)
     {
-        if (null === $limit) {
-            return $query;
-        }
-
-        if ($limit < 0) {
-            throw new Exception(sprintf('Limit must be a positive integer or zero, %d given', $limit));
-        }
-
-        if (0 === $offset && false === strpos($query, 'ORDER BY')) {
-            // In cases where an offset isn't required and there's no "ORDER BY" clause,
-            // we can use the much simpler "FETCH FIRST".
-
-            return sprintf('%s FETCH FIRST %u ROWS ONLY', $query, $limit);
-        }
-
-        $query .= sprintf(' LIMIT %u', $limit);
-
         if ($offset > 0) {
-            $query .= sprintf(' OFFSET %u', $offset);
+            $query .= sprintf(' OFFSET %u ROW%s', $offset, 1 === $offset ? '' : 'S');
+        }
+
+        if (null !== $limit) {
+            if ($limit < 0) {
+                throw new Exception(sprintf('Limit must be a positive integer or zero, %d given', $limit));
+            }
+
+            $query .= sprintf(' FETCH %s %u ROW%s ONLY', 0 === $offset ? 'FIRST' : 'NEXT', $limit, 1 === $limit ? '' : 'S');
         }
 
         return $query;

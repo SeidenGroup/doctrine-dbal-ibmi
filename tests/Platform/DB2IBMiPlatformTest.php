@@ -107,21 +107,21 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
     public function limitQueryProvider(): iterable
     {
         yield [
-            'SELECT * FROM mytable LIMIT 5 OFFSET 2',
+            'SELECT * FROM mytable OFFSET 2 ROWS FETCH NEXT 5 ROWS ONLY',
             'SELECT * FROM mytable',
             5,
             2,
         ];
 
         yield [
-            'SELECT * FROM mytable LIMIT 1 OFFSET 1',
+            'SELECT * FROM mytable OFFSET 1 ROW FETCH NEXT 1 ROW ONLY',
             'SELECT * FROM mytable',
             1,
             1,
         ];
 
         yield [
-            'SELECT * FROM mytable LIMIT 1 OFFSET 2',
+            'SELECT * FROM mytable OFFSET 2 ROWS FETCH NEXT 1 ROW ONLY',
             'SELECT * FROM mytable',
             1,
             2,
@@ -135,21 +135,21 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         ];
 
         yield [
-            'SELECT * FROM mytable FETCH FIRST 1 ROWS ONLY',
+            'SELECT * FROM mytable FETCH FIRST 1 ROW ONLY',
             'SELECT * FROM mytable',
             1,
             0,
         ];
 
         yield [
-            'SELECT * FROM mytable FETCH FIRST 1 ROWS ONLY',
+            'SELECT * FROM mytable FETCH FIRST 1 ROW ONLY',
             'SELECT * FROM mytable',
             1,
             null,
         ];
 
         yield [
-            'SELECT * FROM mytable',
+            'SELECT * FROM mytable OFFSET 1 ROW',
             'SELECT * FROM mytable',
             null,
             1,
@@ -163,21 +163,21 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         ];
 
         yield [
-            'SELECT * FROM mytable ORDER BY created_at LIMIT 1',
+            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 1 ROW ONLY',
             'SELECT * FROM mytable ORDER BY created_at',
             1,
             0,
         ];
 
         yield [
-            'SELECT * FROM mytable ORDER BY created_at LIMIT 1',
+            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 1 ROW ONLY',
             'SELECT * FROM mytable ORDER BY created_at',
             1,
             null,
         ];
 
         yield [
-            'SELECT * FROM mytable ORDER BY created_at LIMIT 0',
+            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 0 ROWS ONLY',
             'SELECT * FROM mytable ORDER BY created_at',
             0,
             0,
@@ -191,7 +191,7 @@ final class DB2IBMiPlatformTest extends AbstractTestCase
         ];
 
         yield [
-            'SELECT * FROM mytable ORDER BY created_at LIMIT 0',
+            'SELECT * FROM mytable ORDER BY created_at FETCH FIRST 0 ROWS ONLY',
             'SELECT * FROM mytable ORDER BY created_at',
             0,
             null,
