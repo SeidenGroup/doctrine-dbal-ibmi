@@ -30,4 +30,92 @@ final class OdbcIbmiConnectionTest extends AbstractTestCase
 
         static::assertInstanceOf(OdbcIBMiConnection::class, $wrappedConnection);
     }
+
+    /**
+     * @return void
+     */
+    public function testSelect()
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+        $sql = 'SELECT TABLE_NAME, TABLE_OWNER'
+            .' FROM QSYS2.SYSTABLES'
+            .' WHERE TABLE_OWNER = \'ALAN\''
+            .' ORDER BY TABLE_NAME DESC'
+            .' LIMIT 10';
+
+        $result = $connection
+            ->executeQuery($sql)
+            ->fetchAllAssociative();
+
+        self::assertCount(10, $result);
+        self::assertCount(2, $result[0]);
+        self::assertArrayHasKey('TABLE_NAME', $result[0]);
+        self::assertArrayHasKey('TABLE_OWNER', $result[0]);
+        self::assertSame('WEATHER_RAW', $result[0]['TABLE_NAME']); // ASC: "@TP025"
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetListTableColumnsSQL()
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+
+        $sql = $connection->getDatabasePlatform()->getListTableColumnsSQL('SYSTABLES', 'QSYS2');
+
+        $result = $connection
+            ->executeQuery($sql)
+            ->fetchAllAssociative();
+
+        self::assertCount(32, $result);
+        self::assertCount(13, $result[0]);
+        self::assertArrayHasKey('TABSCHEMA', $result[0]);
+        self::assertArrayHasKey('TABNAME', $result[0]);
+        self::assertSame('QSYS2', $result[0]['TABSCHEMA']);
+        self::assertSame('SYSTABLES', $result[0]['TABNAME']);
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetListTableIndexesSQL()
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+
+        $sql = $connection->getDatabasePlatform()->getListTableIndexesSQL('WEATHER_RAW', 'WEATHER');
+
+        $result = $connection
+            ->executeQuery($sql)
+            ->fetchAllAssociative();
+
+        self::assertCount(2, $result);
+        self::assertCount(4, $result[0]);
+        self::assertArrayHasKey('KEY_NAME', $result[0]);
+        self::assertArrayHasKey('COLUMN_NAME', $result[0]);
+        self::assertArrayHasKey('PRIMARY', $result[0]);
+        self::assertArrayHasKey('NON_UNIQUE', $result[0]);
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetListTableForeignKeysSQL()
+    {
+        $connection = self::getConnection(OdbcDriver::class);
+
+        $sql = $connection->getDatabasePlatform()->getListTableForeignKeysSQL('ORDERS', 'QWQCENT');
+
+        $result = $connection
+            ->executeQuery($sql)
+            ->fetchAllAssociative();
+
+        self::assertCount(3, $result);
+        self::assertCount(6, $result[0]);
+        self::assertArrayHasKey('LOCAL_COLUMN', $result[0]);
+        self::assertArrayHasKey('FOREIGN_TABLE', $result[0]);
+        self::assertArrayHasKey('FOREIGN_COLUMN', $result[0]);
+        self::assertArrayHasKey('INDEX_NAME', $result[0]);
+        self::assertArrayHasKey('ON_UPDATE', $result[0]);
+        self::assertArrayHasKey('ON_DELETE', $result[0]);
+    }
 }
